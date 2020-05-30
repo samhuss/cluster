@@ -7,13 +7,13 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: elasticsearch
-    server: {{ .Values.cluster }}
-  project: {{ .Values.project }}
+    namespace: traefik
+    server: https://kubernetes.default.svc
+  project: default
   source:
     chart: elasticsearch
-    helm:
-      valueFiles:
-      - values.yaml
+    # helm:
+    #   valueFiles:
+    #   - values.yaml
     repoURL: https://helm.elastic.co
     targetRevision: 7.6.1
