@@ -11,7 +11,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    chart: traefik/traefik
+    path: traefik
     repoURL: https://github.com/containous/traefik-helm-chart
     targetRevision: HEAD
     # helm:
