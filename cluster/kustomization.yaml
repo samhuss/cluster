@@ -11,7 +11,7 @@ namespace: cluster
 resources:
   - ./namespaces.yaml
   - ./application-traefik.yaml
-  # - ./application-elasticsearch.yaml
+  - ./application-elasticsearch.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml
