@@ -14,7 +14,7 @@ spec:
     path: traefik
     repoURL: https://github.com/containous/traefik-helm-chart
     targetRevision: HEAD
-    # helm:
-      # valueFiles:
-      # - values.yaml
+    helm:
+      valueFiles:
+      - values.yaml
     # targetRevision: 2.2.1

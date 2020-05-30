@@ -4,3 +4,9 @@
 
 cluster: https://kubernetes.default.svc
 project: default
+
+# traefik values
+ingressRoute:
+  dashboard:
+    enabled: true
+    domain: raseedy.io
