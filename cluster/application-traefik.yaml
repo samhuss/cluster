@@ -16,4 +16,4 @@ spec:
     # helm:
       # valueFiles:
       # - values.yaml
-    # targetRevision: 7.6.1
+    targetRevision: 8.2.1
