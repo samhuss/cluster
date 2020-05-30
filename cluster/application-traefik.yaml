@@ -16,4 +16,5 @@ spec:
     # helm:
       # valueFiles:
       # - values.yaml
-    targetRevision: 2.2.1
+    # targetRevision: 2.2.1
+    targetRevision: HEAD
