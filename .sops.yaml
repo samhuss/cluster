@@ -1,0 +1,7 @@
+creation_rules:
+  - encrypted_regex: '^(data|stringData)$'
+    pgp: >- 
+      8CC3DBB98A442086023F9766A5296C151AD0CA9E,
+      4C70A838416441A4E5A476B46E17861CCB27B2FB
+    azure_keyvault: 'https://raseedy-gitops.vault.azure.net/keys/sops-key/24463ded09434256b46852a5cd1a6edf'
+

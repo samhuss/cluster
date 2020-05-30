@@ -1,0 +1,26 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: logging
+spec:
+  entryPoints:                  # [1]
+    - footcp
+  routes:                       # [2]
+  - match: HostSNI(`fluentb.samcloud.site`)         # [3]
+    services:                   # [4]
+    - name:                  # [5]
+      port: 8080                # [6]
+      weight: 10                # [7]
+      terminationDelay: 400     # [8]
+  # tls:                          # [9]
+  #   secretName: supersecret     # [10]
+  #   options:                    # [11]
+  #     name: opt                 # [12]
+  #     namespace: default        # [13]
+  #   certResolver: foo           # [14]
+  #   domains:                    # [15]
+  #   - main: example.net         # [16]
+  #     sans:                     # [17]
+  #     - a.example.net
+  #     - b.example.net
+  #   passthrough: false          # [18]
