@@ -4,12 +4,14 @@ kind: Kustomization
 # namespace will be defined by the caller using kustomize edit set namespace ${namespace}
 namespace: cluster
 
-bases:
-  - ../../../base/fluent-bit
+# bases:
+#   - ../../../base/fluent-bit
 
 
 resources:
+  - ./namespaces.yaml
   - ./application-traefik.yaml
+  - ./application-elasticsearch.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml

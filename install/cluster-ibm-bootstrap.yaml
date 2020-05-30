@@ -5,15 +5,12 @@ metadata:
   namespace: argocd
 spec:
   destination:
-    namespace: default
+    namespace: cluster
     server: https://kubernetes.default.svc
   project: default
   source:
-    helm:
-      valueFiles:
-      - values.yaml
-    path: cluster-charts
-    repoURL: https://github.com/AlexsJones/gitops-kubernetes-cluster.git
+    path: cluster
+    repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
   syncPolicy:
     automated: {}

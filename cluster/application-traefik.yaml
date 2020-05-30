@@ -7,14 +7,13 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    # namespace: elasticsearch
-    server: {{ .Values.cluster }}
-  project: {{ .Values.project }}
+    namespace: elasticsearch
+    server: https://kubernetes.default.svc
+  project: default
   source:
     chart: traefik/traefik
-    helm:
+    repoURL: https://containous.github.io/traefik-helm-chart
+    # helm:
       # valueFiles:
       # - values.yaml
-    repoURL: https://containous.github.io/traefik-helm-chart
-    # repoURL: https://helm.elastic.co
     # targetRevision: 7.6.1

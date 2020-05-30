@@ -1,20 +1,26 @@
-version=v1.5.5
-clusterNamespace=cluster
+version=v1.5.3
+clusterNamespace=argocd
 
 help:		## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 
+uninstall-cluster-argocd:	## uninstall Argocd cluster wide 
+	kustomize build --enable_alpha_plugins  ./base/argocd  | kubectl delete -f -
+
 install-cluster-argocd:	## install Argocd cluster wide 
-	kubectl create ns cluster || true
-	kustomize edit set namespace cluster
+	kubectl create ns argocd || true
+	# kustomize edit set namespace cluster
 	kustomize build --enable_alpha_plugins  ./base/argocd  | kubectl apply -f -
 
 bootstrap-cluster-applications: ## install Argocd main bootstrap application
 	kubectl apply -f install/cluster-bootstrap.yaml -n $clusterNamespace
 
+get-argocd-password: ## get the name pod name of argocd-server deployment
+	kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+
 download-argocd:	## ping all VMs in ibm cloud with root user
-	kustomize build github.com/argoproj/argo-cd//manifests/cluster-install?ref=$version > ../base/argocd/argocd_$version.yaml
+	kustomize build github.com/argoproj/argo-cd//manifests/cluster-install?ref=${version} > ./base/argocd/argocd_${version}.yaml
 
 
 commons-ibm-all:	## install all required packages on all VMs, open-isci, iptables, ip utils

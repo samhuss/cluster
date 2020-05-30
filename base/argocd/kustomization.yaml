@@ -2,16 +2,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 # namespace will be defined by the caller using kustomize edit set namespace ${namespace}
-# namespace: cluster
+namespace: argocd
 
-# bases:
+bases:
 # - github.com/argoproj/argo-cd//manifests/cluster-install?ref=v1.5.5
-# - github.com/argoproj/argo-cd//manifests/cluster-install
+- github.com/argoproj/argo-cd//manifests/cluster-install
 
 # using downloaded version v1.5.5 for future reference and fast deployment
-resources:
-  - argocd_v1.5.5.yaml
+# resources:
+#   - argocd_v1.5.5.yaml
   # - argocd_v1.5.4.yaml
+  # - argocd_v1.5.3.yaml
 
 patches: 
 - patch-argocd-repo-server.yaml
@@ -29,7 +30,13 @@ configMapGenerator:
   behavior: merge
   literals: 
   - kustomize.buildOptions="--enable_alpha_plugins" 
-  # - admin.enabled="true"
-    # - ./argocd-cm.properties
+  files:
+  - ./config/repositories
+  - ./config/repository.credentials
+
+- name: argocd-ssh-known-hosts-cm
+  behavior: merge
+  files: 
+  - ./config/ssh_known_hosts
 
 
