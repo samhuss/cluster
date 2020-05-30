@@ -11,10 +11,10 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    chart: traefik/traefik
-    repoURL: https://containous.github.io/traefik-helm-chart
+    chart: traefik
+    repoURL: https://github.com/containous/traefik-helm-chart
+    targetRevision: HEAD
     # helm:
       # valueFiles:
       # - values.yaml
     # targetRevision: 2.2.1
-    targetRevision: HEAD
