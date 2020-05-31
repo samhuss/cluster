@@ -11,11 +11,10 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: longhorn
-    repoURL: ../base
+    path: base/longhorn
+    repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
-
   # source:
-  #   path: base/longhorn
-  #   repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
-  #   targetRevision: HEAD
+    # path: longhorn
+    # repoURL: ../base
+    # targetRevision: HEAD
