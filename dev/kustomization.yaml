@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: dev
 
 bases:
-  - ../../../base/postgres-simple
+  - ../base/postgres-simple
 
 
 resources:
