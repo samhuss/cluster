@@ -11,11 +11,18 @@ namespace: dev
 resources:
   - ./namespaces.yaml
   - ../base/postgres-simple
+  - ../base/keycloak
   # - ./application-postgres-dev.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml
 
+configMapGenerator:
+- name: keycloak-env
+  behavior: merge
+  literals: 
+  - POSTGRES_HOST="postgres.dev"
+  - POSTGRES_ADDR="postgres.dev"
 
 
 # generators:
