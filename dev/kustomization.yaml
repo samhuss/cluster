@@ -8,8 +8,8 @@ namespace: dev
 #   - ../base/postgres-simple
 
 
-# resources:
-#   - ./namespaces.yaml
+resources:
+  - ./namespaces.yaml
   # - ./application-postgres-dev.yaml
 
 # patches: 
