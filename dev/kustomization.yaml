@@ -2,18 +2,15 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 # namespace will be defined by the caller using kustomize edit set namespace ${namespace}
-namespace: argocd
+namespace: dev
 
-# bases:
-#   - ../../../base/fluent-bit
+bases:
+  - ../../../base/postgres-simple
 
 
 resources:
   - ./namespaces.yaml
-  - ./application-traefik.yaml
-  - ./application-elasticsearch.yaml
-  - ./application-cert-manager.yaml
-  - ./cluster-ibm-dev.yaml
+  # - ./application-postgres-dev.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml
