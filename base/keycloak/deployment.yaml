@@ -17,9 +17,9 @@ data:
   DB_VENDOR: postgres
   # # POSTGRES_USER: admin
   # # POSTGRES_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
-  # POSTGRES_USER: keycloak
+  POSTGRES_USER: admin
   # POSTGRES_PASSWORD: keycloak
-  # DB_USER: keycloak
+  DB_USER: admin
   # DB_PASSWORD: keycloak
   # # DB_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
   # # BASE_SCRIPT_DIR: "/scripts"
