@@ -10,7 +10,7 @@ namespace: dev
 
 resources:
   - ./namespaces.yaml
-  # - ./application-postgres-dev.yaml
+  - ./application-postgres-dev.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml
