@@ -9,15 +9,14 @@ data:
   # POSTGRES_ADDR: "postgres.default"
   POSTGRES_PORT: "5432"
   POSTGRES_SCHEMA: "public"
-  POSTGRES_DATABASE: "keycloak"
+  POSTGRES_DATABASE: "postgres"
   PROXY_ADDRESS_FORWARDING: "true"
   KEYCLOAK_USER: "keycloak"
   KEYCLOAK_MGMT_USER: "keycloak"
   KEYCLOAK_OWNERS_COUNT: "2"
   DB_VENDOR: postgres
-  # # POSTGRES_USER: admin
-  # # POSTGRES_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
   POSTGRES_USER: admin
+  POSTGRES_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
   # POSTGRES_PASSWORD: keycloak
   DB_USER: admin
   # DB_PASSWORD: keycloak

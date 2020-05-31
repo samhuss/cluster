@@ -21,8 +21,8 @@ configMapGenerator:
 - name: keycloak-env
   behavior: merge
   literals: 
-  - DB_ADDR="postgres.dev"
-  - POSTGRES_HOST="postgres.dev"
+  # - DB_ADDR="postgres"
+  - POSTGRES_HOST="postgres"
   # - POSTGRES_ADDR="postgres"
   - POSTGRES_DATABASE="postgres"
 
