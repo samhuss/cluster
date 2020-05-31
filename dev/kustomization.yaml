@@ -24,6 +24,7 @@ configMapGenerator:
   - DB_ADDR="postgres.dev"
   - POSTGRES_HOST="postgres.dev"
   - POSTGRES_ADDR="postgres.dev"
+  - POSTGRES_DATABASE="postgres"
 
 
 # generators:

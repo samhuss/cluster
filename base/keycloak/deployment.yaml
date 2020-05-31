@@ -23,15 +23,15 @@ data:
   # DB_PASSWORD: keycloak
   # # DB_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
   # # BASE_SCRIPT_DIR: "/scripts"
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name:  keycloak
-data:
-  KEYCLOAK_PASSWORD: L2ZNQ0U3Um5JKzFkd3o3cGF4Sko1bW54bUlPMGFtemZOSzRubklmdTZpRT0=
-  KEYCLOAK_MGMT_PASSWORD: L2ZNQ0U3Um5JKzFkd3o3cGF4Sko1bW54bUlPMGFtemZOSzRubklmdTZpRT0=
-type: Opaque
+# ---
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name:  keycloak
+# data:
+#   KEYCLOAK_PASSWORD: L2ZNQ0U3Um5JKzFkd3o3cGF4Sko1bW54bUlPMGFtemZOSzRubklmdTZpRT0=
+#   KEYCLOAK_MGMT_PASSWORD: L2ZNQ0U3Um5JKzFkd3o3cGF4Sko1bW54bUlPMGFtemZOSzRubklmdTZpRT0=
+# type: Opaque
 ---
 apiVersion: apps/v1
 kind: Deployment
