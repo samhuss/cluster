@@ -16,7 +16,7 @@ data:
   KEYCLOAK_OWNERS_COUNT: "2"
   DB_VENDOR: postgres
   POSTGRES_USER: admin
-  POSTGRES_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
+  # POSTGRES_PASSWORD: /nLNZKDC7oEvzDjJYwg8bDiASnNcS20w94d9NLRm6no=
   # POSTGRES_PASSWORD: keycloak
   DB_USER: admin
   # DB_PASSWORD: keycloak
@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
         - name:  keycloak
-          image:  jboss/keycloak
+          image:  jboss/keycloak:3.4.2.Final
           imagePullPolicy: "IfNotPresent"
           envFrom:
             - configMapRef:
