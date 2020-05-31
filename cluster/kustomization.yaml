@@ -13,7 +13,8 @@ resources:
   - ./application-traefik.yaml
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
-  - ./cluster-ibm-dev.yaml
+  
+  # - ./cluster-ibm-dev.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml
