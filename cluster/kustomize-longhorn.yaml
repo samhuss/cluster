@@ -7,10 +7,10 @@ metadata:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: longhorn
+    namespace: longhorn-system
     server: https://kubernetes.default.svc
   project: default
   source:
     path: 
-    repoURL: https://github.com/containous/traefik-helm-chart
+    repoURL: https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml
     targetRevision: HEAD

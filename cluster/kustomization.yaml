@@ -13,6 +13,9 @@ resources:
   - ./application-traefik.yaml
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
+  # - ../base/longhorn
+  - https://raw.githubusercontent.com/longhorn/longhorn/master/deploy/longhorn.yaml
+
   # - ./cluster-ibm-dev.yaml
 
 # patches: 
