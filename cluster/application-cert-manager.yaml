@@ -16,6 +16,6 @@ spec:
     targetRevision: v0.15.1
     helm:
       parameters:
-      - name: installCRDs
-        value: "true"
+      - name: "installCRDs"
+        value: true
 
