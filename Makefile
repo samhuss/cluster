@@ -24,6 +24,10 @@ get-argocd-password: ## get the name pod name of argocd-server deployment
 download-argocd:	## ping all VMs in ibm cloud with root user
 	kustomize build github.com/argoproj/argo-cd//manifests/cluster-install?ref=${version} > ./base/argocd/argocd_${version}.yaml
 
+download-minio:		## download minio resource
+	curl -sL https://raw.githubusercontent.com/minio/minio-operator/master/minio-operator.yaml -o ./base/minio/minio-operator.yaml
+	curl -sL https://raw.githubusercontent.com/minio/minio-operator/master/examples/minioinstance.yaml -o ./base/minio/minioinstance-example.yaml
+
 
 commons-ibm-all:	## install all required packages on all VMs, open-isci, iptables, ip utils
 	ansible-playbook commons-playbook.yaml  -i inventory/hosts-ibm.yaml
