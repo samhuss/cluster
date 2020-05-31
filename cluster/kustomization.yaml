@@ -14,7 +14,7 @@ resources:
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
   # - ../base/longhorn
-  # - ./application-longhorn.yaml  // helm chart path not correct
+  - ./application-longhorn.yaml  
 
   # - ./cluster-ibm-dev.yaml
 
