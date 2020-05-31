@@ -4,8 +4,8 @@ kind: Kustomization
 # namespace will be defined by the caller using kustomize edit set namespace ${namespace}
 namespace: dev
 
-bases:
-  - ../base/postgres-simple
+# bases:
+#   - ../base/postgres-simple
 
 
 # resources:
