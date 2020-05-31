@@ -6,7 +6,7 @@ metadata:
     app: keycloak
 data:
   POSTGRES_HOST: "postgres.default"
-  POSTGRES_ADDR: "postgres.default"
+  # POSTGRES_ADDR: "postgres.default"
   POSTGRES_PORT: "5432"
   POSTGRES_SCHEMA: "public"
   POSTGRES_DATABASE: "keycloak"
