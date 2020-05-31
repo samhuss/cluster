@@ -12,6 +12,7 @@ resources:
   - ./namespaces.yaml
   - ./application-traefik.yaml
   - ./application-elasticsearch.yaml
+  - ./application-cert-manager.yaml
 
 # patches: 
 # - patch-argocd-repo-server.yaml

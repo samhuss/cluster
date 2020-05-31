@@ -5,16 +5,16 @@ help:		## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 
-uninstall-cluster-argocd:	## uninstall Argocd cluster wide 
+uninstall-argocd:	## uninstall Argocd cluster wide 
 	kustomize build --enable_alpha_plugins  ./base/argocd  | kubectl delete -f -
 
-install-cluster-argocd:	## install Argocd cluster wide 
+install-argocd:	## install Argocd cluster wide 
 	kubectl create ns argocd || true
 	# kustomize edit set namespace cluster
 	kustomize build --enable_alpha_plugins  ./base/argocd  | kubectl apply -f -
 
-bootstrap-cluster-applications: ## install Argocd main bootstrap application
-	kubectl apply -f install/cluster-bootstrap.yaml -n $clusterNamespace
+bootstrap-cluster: ## install Argocd main bootstrap application
+	kubectl apply -f install/cluster-ibm-bootstrap.yaml -n argocd
 
 get-argocd-password: ## get the name pod name of argocd-server deployment
 	kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
