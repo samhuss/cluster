@@ -13,7 +13,7 @@ resources:
   - ./application-traefik.yaml
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
-  - ../base/longhorn
+  # - ../base/longhorn
   # - ./application-longhorn.yaml  // helm chart path not correct
 
   # - ./cluster-ibm-dev.yaml
