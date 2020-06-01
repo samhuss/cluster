@@ -4,7 +4,7 @@ kind: Kustomization
 # namespace will be defined by the caller using kustomize edit set namespace ${namespace}
 namespace: argocd
 
-bases:
+# bases:
   # - ./cert-manager
 #   - ../../../base/fluent-bit
 
@@ -14,17 +14,5 @@ resources:
   - ./application-traefik.yaml
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
-  # - ../base/longhorn
-  - ./application-longhorn.yaml  
   - ./application-common.yaml  
-
-  # - ./cluster-ibm-dev.yaml
-
-# patches: 
-# - patch-argocd-repo-server.yaml
-
-
-
-# generators:
-#   - ./secret-generator.yaml
 
