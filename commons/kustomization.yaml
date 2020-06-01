@@ -5,7 +5,7 @@ kind: Kustomization
 # namespace: cluster
 
 bases:
-- ./ingress
-  # - ./cert-manager
+  - ./cert-manager
+  - ./ingress
 
 

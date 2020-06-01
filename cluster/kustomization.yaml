@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: argocd
 
 bases:
-  - ./cert-manager
+  # - ./cert-manager
 #   - ../../../base/fluent-bit
 
 
