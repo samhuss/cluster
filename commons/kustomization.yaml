@@ -5,17 +5,7 @@ kind: Kustomization
 # namespace: cluster
 
 bases:
-  - ./cert-manager
+- ./ingress
+  # - ./cert-manager
 
-# resources:
-#   - ./cert-manager
-
-
-# patches: 
-# - 
-
-
-
-generators:
-  - ./secret-generator.yaml
 
