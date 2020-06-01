@@ -4,10 +4,10 @@ metadata:
   name: raseedy
   namespace: ingress
 spec:
-  secretName: raseedy-tls
+  secretName: raseedy-io-tls
   issuerRef:
     # The issuer created previously
-    name: acmedns-cluster-issuer
+    name: acmedns-issuer
     kind: ClusterIssuer
   dnsNames:
   - "*.raseedy.io"
