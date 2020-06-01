@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: raseedy
+  namespace: ingress
+spec:
+  secretName: raseedy-tls
+  issuerRef:
+    # The issuer created previously
+    name: acmedns-cluster-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - "*.raseedy.io"

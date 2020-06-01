@@ -8,15 +8,9 @@ namespace: ingress
 #   - ../../../base/fluent-bit
 
 
-# resources:
-  # - ./issuer-letsencrypt-acmedns.yaml
-
-
-# patches: 
-# - 
+resources:
+  - ./cert-raseedy-io.yaml
 
 
 
-generators:
-  - ./secret-generator.yaml
 

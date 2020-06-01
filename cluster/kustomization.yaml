@@ -16,7 +16,7 @@ resources:
   - ./application-cert-manager.yaml
   # - ../base/longhorn
   - ./application-longhorn.yaml  
-  # - ./application-common.yaml  
+  - ./application-common.yaml  
 
   # - ./cluster-ibm-dev.yaml
 
