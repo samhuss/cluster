@@ -1,0 +1,148 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: kk-auth
+  namespace: traefik
+spec:
+  forwardAuth:
+    # address: https://auth.raseedy.site/_oauth
+    # address: https://auth.raseedy.site
+    address: http://traefik-forward-auth.traefik
+    trustForwardHeader: true
+    authResponseHeaders:
+      - X-Forwarded-User
+      - X-Auth-User
+      - X-Secret
+      - KEYCLOAK_SESSION
+      - KEYCLOAK_IDENTITY
+    # tls:
+    #   insecureSkipVerify: 'true'
+---
+# Main deployment
+## 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: traefik-forward-auth
+
+  name: traefik-forward-auth
+  namespace: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik-forward-auth
+  template:
+    metadata:
+      labels:
+        app: traefik-forward-auth
+    spec:
+      containers:
+        - name: traefik-forward-auth
+          image: thomseddon/traefik-forward-auth:2
+          ports:
+            - containerPort: 4181
+              protocol: TCP
+          # read CLIENT_SECRET and SECRET directly from secret data (configuration above)
+          envFrom: 
+            - secretRef:
+                name: traefik-forward-auth-secrets
+          env:
+            - name: DEFAULT_PROVIDER
+              value: oidc
+            - name: PROVIDERS_OIDC_ISSUER_URL
+              value: https://keycloak.raseedy.site/auth/realms/Dev
+            - name: PROVIDERS_OIDC_CLIENT_ID
+              value: traefik
+            # - name: PROVIDERS_OIDC_CLIENT_SECRET
+            #   value: 7bcdf41a-1c03-4853-95a8-d39cb20d3922
+            # - name: CLIENT_SECRET
+            - name: PROVIDERS_OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: traefik-forward-auth-secrets
+                  key: CLIENT_SECRET
+            # - name: PROVIDER_OIDC_CLIENT_SECRET
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: traefik-forward-auth-secrets
+            #       key: CLIENT_SECRET
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: traefik-forward-auth-secrets
+                  key: SECRET
+            - name: INSECURE_COOKIE
+              value: 'false'
+            - name: COOKIE_DOMAIN
+              value: dev.raseedy.io
+            # - name: DOMAIN
+            #   value: raseedy.site
+            - name: AUTH_HOST
+              value: auth.dev.raseedy.io
+            - name: LOG_LEVEL
+              value: debug
+            # - name: COOKIE_NAME
+            #   value: KEYCLOAK_SESSION
+            
+          livenessProbe:
+            tcpSocket:
+              port: 4181
+            initialDelaySeconds: 20
+            failureThreshold: 3
+            successThreshold: 1
+            periodSeconds: 10
+            timeoutSeconds: 2
+---
+
+##
+# Related service
+##
+kind: Service
+apiVersion: v1
+metadata:
+  name: traefik-forward-auth
+  namespace: traefik
+spec:
+  selector:
+    app: traefik-forward-auth
+  ports:
+    - port: 80
+      targetPort: 4181
+      protocol: TCP
+---
+
+##
+# Ingress for the auth host
+##
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-forward-auth
+  namespace: traefik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: HOST(`auth.dev.raseedy.io`) 
+    kind: Rule
+    services:
+    - name:  traefik-forward-auth
+      port: 80
+      namespace: traefik
+    middlewares:
+      - name: kk-auth
+      # - name: traefik-forward-auth@kubernetescrd
+      # namespace: traefik
+  tls:
+      secretName: raseedy-io-tls
+      domains:
+      - main: "*.raseedy.io"
+  # tls: 
+  #   certResolver: myresolver
+  #   domains:
+  #   - main: "*.raseedy.io"
+
+---

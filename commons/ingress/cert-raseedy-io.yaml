@@ -2,9 +2,9 @@ apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
   name: raseedy
-  namespace: ingress
+  namespace: traefik
 spec:
-  secretName: raseedy-io-tls
+  secretName: raseedy-tls
   issuerRef:
     # The issuer created previously
     name: acmedns-issuer

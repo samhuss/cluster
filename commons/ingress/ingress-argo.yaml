@@ -1,0 +1,57 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argocd-server
+  namespace: ingress
+spec:
+  entryPoints:
+    # - websecure
+    - web
+  routes:
+  - match: Host(`argocd.dev.raseedy.io`) 
+    kind: Rule
+    services:
+    - name: argocd-server
+      namespace: argocd
+      port: 80
+      scheme: http
+    middlewares:  
+    - name: kk-auth
+  tls:
+    secretName: raseedy-io-tls
+    domains:
+    - main: "*.raseedy.io"
+  # tls:
+  #     certResolver: myresolver
+  #     domains:
+  #     - main: "*.raseedy.io"
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argo-server
+  namespace: ingress
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`argocd.dev.raseedy.io`) 
+    kind: Rule
+    services:
+    - name: argo-server
+      namespace: argo
+      port: 2746
+      scheme: https
+    middlewares:  
+    - name: kk-auth
+  tls:
+    secretName: raseedy-io-tls
+    domains:
+    - main: "*.raseedy.io"
+  # tls:
+  #     certResolver: myresolver
+  #     domains:
+  #     - main: "*.raseedy.site"
+
+      
