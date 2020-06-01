@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# namespace will be defined by the caller using kustomize edit set namespace ${namespace}
+# namespace: cluster
+
+# bases:
+#   - ../../../base/fluent-bit
+
+
+resources:
+  - ./cert-manager
+
+
+# patches: 
+# - 
+
+
+
+generators:
+  - ./secret-generator.yaml
+

@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: longhorn
+  name: harbor
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: longhorn-system
+    namespace: harbor
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: base/longhorn
-    repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
+    path: harbor/harbor
+    repoURL: https://helm.goharbor.io
     targetRevision: HEAD

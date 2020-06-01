@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: longhorn
+  name: bootstrap-dev
   namespace: argocd
-  finalizers:
-  - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: longhorn-system
+    namespace: dev
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: base/longhorn
+    path: dev
     repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
+  syncPolicy:
+    automated: {}
