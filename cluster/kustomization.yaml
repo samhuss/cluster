@@ -15,6 +15,5 @@ resources:
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
   - ./application-common.yaml  
-  - ./application-cert-manager.yaml
-  - ../install/cluster-ibm-dev.yaml
+  - ../install/bootstrap-ibm-dev.yaml
 
