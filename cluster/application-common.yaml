@@ -9,7 +9,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: common
+    path: commons
     repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
   syncPolicy:
