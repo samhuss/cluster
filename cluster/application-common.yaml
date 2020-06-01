@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap-common
+  name: bootstrap-cluster-common
   namespace: argocd
 spec:
   destination:
