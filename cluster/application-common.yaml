@@ -1,15 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap-dev
+  name: bootstrap-common
   namespace: argocd
 spec:
   destination:
-    namespace: dev
+    namespace: cluster
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: dev
+    path: common
     repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
   syncPolicy:
