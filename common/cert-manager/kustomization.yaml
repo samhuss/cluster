@@ -7,13 +7,8 @@ namespace: cert-manager
 # bases:
 #   - ../../../base/fluent-bit
 
-
 resources:
   - ./issuer-letsencrypt-acmedns.yaml
-
-
-# patches: 
-# - 
 
 generators:
   - ./secret-generator.yaml
