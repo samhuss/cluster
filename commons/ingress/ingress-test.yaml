@@ -1,0 +1,22 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1beta1
+metadata:
+  name: test-argocd-ingress
+  namespace: argocd
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure 
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.domains.0.main: "*.raseedy.io"
+    traefik.ingress.kubernetes.io/service.passhostheader: "true"
+
+spec:
+  rules:
+  - host: ab.dev.raseedy.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: argocd-server
+          servicePort: 443
+  tls:
+  - secretName: raseedy-tls

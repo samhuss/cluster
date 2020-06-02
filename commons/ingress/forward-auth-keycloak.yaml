@@ -53,7 +53,7 @@ spec:
             - name: DEFAULT_PROVIDER
               value: oidc
             - name: PROVIDERS_OIDC_ISSUER_URL
-              value: https://keycloak.raseedy.site/auth/realms/Dev
+              value: https://keycloak.dev.raseedy.io/auth/realms/Dev
             - name: PROVIDERS_OIDC_CLIENT_ID
               value: traefik
             # - name: PROVIDERS_OIDC_CLIENT_SECRET
@@ -77,9 +77,7 @@ spec:
             - name: INSECURE_COOKIE
               value: 'false'
             - name: COOKIE_DOMAIN
-              value: dev.raseedy.io
-            # - name: DOMAIN
-            #   value: raseedy.site
+              value: raseedy.io
             - name: AUTH_HOST
               value: auth.dev.raseedy.io
             - name: LOG_LEVEL
@@ -137,9 +135,9 @@ spec:
       # - name: traefik-forward-auth@kubernetescrd
       # namespace: traefik
   tls:
-      secretName: raseedy-io-tls
-      domains:
-      - main: "*.raseedy.io"
+    secretName: raseedy-tls
+    domains:
+    - main: "*.raseedy.io"
   # tls: 
   #   certResolver: myresolver
   #   domains:

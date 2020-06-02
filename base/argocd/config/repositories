@@ -1,2 +1,2 @@
 # cluster bootstrap repository
-- url: https://eu-de.git.cloud.ibm.com/raseedyops/cluster-applications
+- url: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 

@@ -2,10 +2,11 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: keycloak-http
-  namespace: ingress
+  namespace: traefik
 spec:
   entryPoints:
     - websecure
+    - web
   routes:
   - match:  HOST(`keycloak.dev.raseedy.io`) 
     kind: Rule
@@ -13,10 +14,14 @@ spec:
     - name: keycloak
       port: 8080
       namespace: dev
-  tls:
-      secretName: raseedy-io-tls
-      domains:
-      - main: "*.raseedy.io"
+  tls:                              # [9]
+    secretName: raseedy-tls         # [10]
+    domains:
+    - main: "*.raseedy.io"
+  # tls:
+  #     secretName: raseedy-tls
+  #     domains:
+  #     - main: "*.raseedy.io"
   # tls: 
   #     certResolver: myresolver
   #     domains:

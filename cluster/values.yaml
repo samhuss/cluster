@@ -9,4 +9,9 @@ project: default
 ingressRoute:
   dashboard:
     enabled: true
-    domain: raseedy.io
+    domain: dev.raseedy.io
+
+
+image:
+  name: traefik
+  tag: 2.1.8
