@@ -6,6 +6,6 @@ kind: Kustomization
 
 bases:
   - ./cert-manager
-  # - ./ingress
+  - ./ingress
 
 
