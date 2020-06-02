@@ -5,8 +5,8 @@ metadata:
   namespace: traefik
 spec:
   entryPoints:
-    # - websecure
-    - web
+    - websecure
+    # - web
   routes:
   - match: Host(`argocd.dev.raseedy.io`) 
     kind: Rule
@@ -18,10 +18,12 @@ spec:
       scheme: http
     # middlewares:  
     # - name: kk-auth
-  # tls:
-  #   secretName: raseedy-tls
-  #   domains:
-  #   - main: "*.raseedy.io"
+  tls:
+    secretName: raseedy-tls
+    domains:
+    - main: "raseedy.io"
+      sans:
+        - "*.raseedy.io"
   # tls:
   #     certResolver: myresolver
   #     domains:

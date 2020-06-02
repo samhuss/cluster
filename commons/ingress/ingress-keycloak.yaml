@@ -17,7 +17,8 @@ spec:
   tls:                              # [9]
     secretName: raseedy-tls         # [10]
     domains:
-    - main: "*.raseedy.io"
+    - main: "raseedy.io"
+
   # tls:
   #     secretName: raseedy-tls
   #     domains:

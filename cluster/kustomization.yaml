@@ -11,7 +11,7 @@ namespace: argocd
 
 resources:
   - ./namespaces.yaml
-  - ./application-traefik.yaml
+  # - ./application-traefik.yaml
   - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
   - ./application-common.yaml  

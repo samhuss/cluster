@@ -20,3 +20,6 @@ spec:
           servicePort: 443
   tls:
   - secretName: raseedy-tls
+    hosts:
+      - "*.raseedy.io"
+      - "raseedy.io"
