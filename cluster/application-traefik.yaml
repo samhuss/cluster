@@ -19,4 +19,8 @@ spec:
     helm:
       valueFiles:
         - values.yaml
+      values: |
+        image:
+          name: traefik
+          tag: 2.1.8
 
