@@ -4,14 +4,15 @@ kind: Kustomization
 # namespace will be defined by the caller using kustomize edit set namespace ${namespace}
 namespace: dev
 
-# bases:
+bases:
 #   - ../base/postgres-simple
+  - ../base/keycloak
 
 
 resources:
   - ./namespaces.yaml
   - ../base/postgres-simple
-  - ../base/keycloak
+  # - ../base/keycloak
   # - ./application-postgres-dev.yaml
 
 # patches: 

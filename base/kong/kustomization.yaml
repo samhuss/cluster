@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: kong
+
+bases:
+  - github.com/kong/kubernetes-ingress-controller/deploy/manifests/base
+
+# resources:
+#   - ./deployment.yaml
+
+# generators:
+#   - ./secret-generator.yaml
+
+# configMapGenerator:
+#   - name: keycloak-env
+#     behavior: create
+#     literals:
+#       - POSTGRES_HOST="postgres.default"
+#       - POSTGRES_ADDR="postgres.default"
+#       - POSTGRES_PORT="5432"
+#       - POSTGRES_SCHEMA="public"
+#       - POSTGRES_DATABASE="keycloak"
+#       - PROXY_ADDRESS_FORWARDING="true"
+#       - KEYCLOAK_USER="keycloak"
+#       - KEYCLOAK_MGMT_USER="keycloak"
+#       - KEYCLOAK_OWNERS_COUNT="2"
+#       - DB_VENDOR=postgres

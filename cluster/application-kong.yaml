@@ -13,6 +13,6 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: kong/kong
-    repoURL: https://charts.konghq.com
+    path: base/kong
+    repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git
     targetRevision: HEAD
