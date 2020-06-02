@@ -17,4 +17,3 @@ spec:
           accountSecretRef:
             name: acme-dns
             key: acmedns.json
-            namespace: argocd
