@@ -8,8 +8,8 @@ namespace: ingress
 #   - ../../../base/fluent-bit
 
 
-resources:
-  - ./cert-raseedy-io.yaml
+# resources:
+#   - ./cert-raseedy-io.yaml
 
 
 

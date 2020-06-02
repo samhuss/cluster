@@ -9,6 +9,7 @@ namespace: cert-manager
 
 resources:
   - ./issuer-letsencrypt-acmedns.yaml
+  - ./cert-raseedy-io.yaml
 
 generators:
 - ./secret-generator.yaml
