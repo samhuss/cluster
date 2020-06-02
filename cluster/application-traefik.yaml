@@ -21,4 +21,11 @@ spec:
         image:
           name: traefik
           tag: 2.1.8
+        additionalArguments:
+          - --log.level=DEBUG
+          - --accesslog=true
+          - --metrics.prometheus=true
+          - --metrics.prometheus.addEntryPointsLabels=true
+          - --metrics.prometheus.addServicesLabels=true
+          - --global.sendAnonymousUsage=false
 
