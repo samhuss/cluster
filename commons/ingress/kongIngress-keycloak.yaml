@@ -1,0 +1,18 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongIngress
+metadata:
+  name: keycloak-ingress
+  namespace: kong
+  annotations:
+    kubernetes.io/ingress.class: "kong"
+proxy:
+  protocols:
+    # - http
+    - https
+#  path: /
+route:
+  methods:
+    - POST
+    - GET
+  strip_path: true
+  preserve_host: true

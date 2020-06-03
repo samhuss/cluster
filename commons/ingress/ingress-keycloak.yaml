@@ -1,30 +1,24 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
 metadata:
-  name: keycloak-http
-  namespace: traefik
+  name: keycloak
+  namespace: dev
+  annotations:
+    kubernetes.io/ingress.class: "kong"
+    # kong.ingress.kubernetes.io/force-ssl-redirect: "true"
+    # plugins.konghq.com: keycloak-ingress
+    # configuration.konghq.com: "kong-configuration"
 spec:
-  entryPoints:
-    - websecure
-    - web
-  routes:
-  - match:  HOST(`keycloak.dev.raseedy.io`) 
-    kind: Rule
-    services:
-    - name: keycloak
-      port: 8080
-      namespace: dev
-  tls:                              # [9]
-    secretName: raseedy-tls         # [10]
-    domains:
-    - main: "raseedy.io"
-
-  # tls:
-  #     secretName: raseedy-tls
-  #     domains:
-  #     - main: "*.raseedy.io"
-  # tls: 
-  #     certResolver: myresolver
-  #     domains:
-  #     - main: "*.raseedy.site"
-
+  rules:
+  - host: kk.dev.raseedy.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: keycloak
+          servicePort: http
+  tls:
+  - secretName: raseedy-tls
+    hosts:
+      - "raseedy.io"
+      - "kk.dev.raseedy.io"
