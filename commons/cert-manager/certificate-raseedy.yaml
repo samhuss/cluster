@@ -10,4 +10,4 @@ spec:
     name: acmedns-issuer
     kind: ClusterIssuer
   dnsNames:
-  - "*.raseedy.io"
+  - "*.dev.raseedy.io"
