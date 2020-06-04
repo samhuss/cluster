@@ -1,7 +1,7 @@
 apiVersion: cert-manager.io/v1alpha2
 kind: Certificate
 metadata:
-  name: mw-raseedy-stg
+  name: mw-raseedy-mw-stg
   # namespace: traefik
 spec:
   secretName: mw-tls-stg
