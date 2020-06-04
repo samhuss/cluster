@@ -4,7 +4,7 @@ metadata:
   name: keycloak
   namespace: dev
   annotations:
-    kubernetes.io/ingress.class: "kong"
+    # kubernetes.io/ingress.class: "kong"
     # kong.ingress.kubernetes.io/force-ssl-redirect: "true"
     # plugins.konghq.com: keycloak-ingress
     # configuration.konghq.com: "kong-configuration"
@@ -20,5 +20,6 @@ spec:
   tls:
   - secretName: raseedy-tls-stg
     hosts:
-      - "raseedy.io"
       - "kk.dev.raseedy.io"
+      - "raseedy.io"
+      - "*.raseedy.io"
