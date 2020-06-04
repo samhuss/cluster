@@ -12,3 +12,9 @@ spec:
         env:
           - name: KONG_PROXY_LISTEN
             value: 0.0.0.0:8000 proxy_protocol, 0.0.0.0:8443 proxy_protocol ssl http2
+          - name: KONG_TRUSTED_IPS
+            value: "0.0.0.0/0,::/0"
+          - name: KONG_REAL_IP_HEADER
+            value: proxy_protocol
+          - name: KONG_REAL_IP_RECURSIVE
+            value: "on"
