@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: kong
+spec:
+  template:
+    spec:
+      serviceAccountName: kong-serviceaccount
+      containers:
+      - name: proxy
+        env:
+          - name: KEYCLOAK_HTTP_PORT
+            value: "80"
+          - name: KEYCLOAK_HTTPS_PORT
+            value: "443"
