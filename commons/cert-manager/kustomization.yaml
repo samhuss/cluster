@@ -8,7 +8,8 @@ namespace: cert-manager
 #   - ../../../base/fluent-bit
 
 resources:
-  - ./issuer-letsencrypt-acmedns.yaml
+  - ./issuer-letsencrypt-acmedns-stg.yaml
+  - ./issuer-letsencrypt-acmedns-prod.yaml
   - ./certificate-raseedy-stg.yaml
   # - ./certificate-raseedy-prod.yaml
 
