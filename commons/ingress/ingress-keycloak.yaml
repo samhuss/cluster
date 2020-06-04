@@ -18,7 +18,7 @@ spec:
           serviceName: keycloak
           servicePort: http
   tls:
-  - secretName: raseedy-tls
+  - secretName: raseedy-tls-stg
     hosts:
       - "raseedy.io"
       - "kk.dev.raseedy.io"
