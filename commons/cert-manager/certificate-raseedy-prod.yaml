@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: raseedy-prod
+  # namespace: traefik
+spec:
+  secretName: raseedy-tls-prod
+  issuerRef:
+    # The issuer created previously
+    name: acmedns-issuer-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - "*.raseedy.io"
