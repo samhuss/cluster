@@ -2,7 +2,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: argocd-server
-  namespace: traefik
+  namespace: cert-manager
 spec:
   entryPoints:
     - websecure
@@ -14,16 +14,16 @@ spec:
     - name: argocd-server
       kind: Service
       namespace: argocd
-      port: 80
-      scheme: http
+      port: 8443
+      # scheme: https
     # middlewares:  
     # - name: kk-auth
-  tls:
-    secretName: raseedy-tls
-    domains:
-    - main: "raseedy.io"
-      sans:
-        - "*.raseedy.io"
+  # tls:
+  #   secretName: raseedy-tls-stg
+  #   domains:
+  #   - main: "*.raseedy.io"
+  #     sans:
+  #       - "argocd.dev.raseedy.io"
   # tls:
   #     certResolver: myresolver
   #     domains:
