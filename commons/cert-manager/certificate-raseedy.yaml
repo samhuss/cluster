@@ -4,10 +4,10 @@ metadata:
   name: raseedy
   # namespace: traefik
 spec:
-  secretName: raseedy-tls
+  secretName: mw-tls
   issuerRef:
     # The issuer created previously
     name: acmedns-issuer
     kind: ClusterIssuer
   dnsNames:
-  - "*.dev.raseedy.io"
+  - "*.mw.raseedy.io"
