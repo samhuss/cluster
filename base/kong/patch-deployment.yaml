@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: kong
+  name: ingress-kong
 spec:
   template:
     spec:
@@ -9,7 +10,5 @@ spec:
       containers:
       - name: proxy
         env:
-          - name: KEYCLOAK_HTTP_PORT
-            value: "80"
-          - name: KEYCLOAK_HTTPS_PORT
-            value: "443"
+          - name: KONG_PROXY_LISTEN
+            value: 0.0.0.0:8000 proxy_protocol, 0.0.0.0:8443 proxy_protocol ssl http2

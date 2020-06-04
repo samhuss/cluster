@@ -6,6 +6,10 @@ namespace: kong
 bases:
   - github.com/kong/kubernetes-ingress-controller/deploy/manifests/base
 
+patches:
+  - ./patch-deployment.yaml
+
+
 # resources:
 #   - ./deployment.yaml
 
