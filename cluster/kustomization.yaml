@@ -12,7 +12,7 @@ namespace: argocd
 resources:
   - ./namespaces.yaml
   # - ./application-traefik.yaml
-  - ./application-kong-kustomize.yaml
+  # - ./application-kong-kustomize.yaml
   # - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
   - ./application-common.yaml  
