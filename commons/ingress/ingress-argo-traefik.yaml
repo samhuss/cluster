@@ -34,6 +34,38 @@ spec:
   #     - main: "*.raseedy.io"
 ---
 
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: argo-server
+  namespace: cert-manager
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`argo.dev.raseedy.io`) 
+    kind: Rule
+    services:
+    - name: argo-server
+      namespace: argo
+      port: 2746
+      scheme: http
+    # middlewares:  
+    # - name: kk-auth
+  tls:
+    secretName: raseedy-tls-stg
+    domains:
+    - main: "argo.dev.raseedy.io"
+      sans:
+        - "dev.raseedy.io"
+        - "*.raseedy.io"
+  # tls:
+  #     certResolver: myresolver
+  #     domains:
+  #     - main: "*.raseedy.site"
+
+      
+
 # apiVersion: traefik.containo.us/v1alpha1
 # kind: IngressRoute
 # metadata:
