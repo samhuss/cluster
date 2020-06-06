@@ -3,8 +3,27 @@ kind: Kustomization
 
 namespace: kong
 
-bases:
-  - github.com/kong/kubernetes-ingress-controller/deploy/manifests/base
+# bases:
+#   - github.com/kong/kubernetes-ingress-controller/deploy/manifests/base
+
+
+# resources:
+#   - ingrss.yaml
+
+resources:
+  - namespace.yaml
+  - custom-types.yaml
+  - rbac.yaml
+  - kong-ingress-dbless.yaml
+  - validation-service.yaml
+  - service.yaml
+
+  # - kong-ingress-dbless-controller-deployment.yaml
+  # - kong-ingress-dbless-proxy-daemonset.yaml
+  # - service-controller-clusterip.yaml
+  # - service-proxy-clusterip.yaml
+  # - validation-service-controller.yaml
+
 
 patches:
   - ./patch-deployment.yaml
