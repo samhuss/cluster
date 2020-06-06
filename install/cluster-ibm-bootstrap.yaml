@@ -4,6 +4,8 @@ metadata:
   name: bootstrap-cluster
   namespace: argocd
 spec:
+  syncpolicy:
+    automated: {}
   destination:
     namespace: cluster
     server: https://kubernetes.default.svc

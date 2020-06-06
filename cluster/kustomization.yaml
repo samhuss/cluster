@@ -11,7 +11,8 @@ namespace: argocd
 
 resources:
   - ./namespaces.yaml
-  - ../base/nginxlb
+  # - ../base/nginxlb
+  - ./application-traefik-lb.yaml
   # - ./application-traefik.yaml
   # - ./application-kong-kustomize.yaml
   # - ./application-elasticsearch.yaml
