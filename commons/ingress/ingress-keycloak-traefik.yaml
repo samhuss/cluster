@@ -8,18 +8,18 @@ spec:
     - websecure
     # - web
   routes:
-  - match:  HOST(`kkt.dev.raseedy.io`) 
+  - match:  HOST(`kk.dev.raseedy.io`) 
     kind: Rule
     services:
     - name: keycloak
       port: 8080
       namespace: dev
-  tls:                              # [9]
-    secretName: raseedy-tls-stg         # [10]
+  tls:                          
+    secretName: raseedy-tls-stg 
     domains:
-    - main: "raseedy.io"
+    - main: "*.raseedy.io"
       sans: 
-      - kkt.dev.raseedy.io
+      - kk.dev.raseedy.io
 
   # tls:
   #     secretName: raseedy-tls

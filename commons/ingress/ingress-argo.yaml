@@ -14,16 +14,20 @@ spec:
     - name: argocd-server
       kind: Service
       namespace: argocd
-      port: 8443
+      port: 80
       # scheme: https
     # middlewares:  
     # - name: kk-auth
   # tls:
-  #   secretName: raseedy-tls-stg
-  #   domains:
-  #   - main: "*.raseedy.io"
-  #     sans:
-  #       - "argocd.dev.raseedy.io"
+  #   certResolver: default
+  #   options: {}
+  tls:
+    secretName: raseedy-tls-stg
+    domains:
+    - main: "argocd.dev.raseedy.io"
+      sans:
+        - "raseedy.io"
+        - "*.raseedy.io"
   # tls:
   #     certResolver: myresolver
   #     domains:
