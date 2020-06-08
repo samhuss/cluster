@@ -5,7 +5,8 @@ metadata:
   namespace: argocd
 spec:
   syncpolicy:
-    automated: {}
+    automated:
+      selfHeal: true
   destination:
     namespace: cluster
     server: https://kubernetes.default.svc
@@ -14,5 +15,3 @@ spec:
     path: cluster
     repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
-  syncPolicy:
-    automated: {}

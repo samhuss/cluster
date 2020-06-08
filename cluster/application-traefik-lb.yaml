@@ -1,14 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  
+
   name: traefik
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  syncPolicy:
-    automated: {}
+  syncpolicy:
+    automated: 
+      selfHeal: true
   destination:
     namespace: traefik
     server: https://kubernetes.default.svc
