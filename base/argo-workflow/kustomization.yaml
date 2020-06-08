@@ -7,12 +7,23 @@ namespace: argo
 # bases:
 #   - ../../../base/fluent-bit
 
+# Latest argocd 
+  # curl -sLO https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
+  # curl -sLO https://raw.githubusercontent.com/argoproj/argo/v2.8.1/manifests/install.yaml
+
 resources:
-  # - https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
-  - ./install-2.5.yaml
-  # - ./certificate-raseedy-stg.yaml
-  # # - ./certificate-raseedy-prod.yaml
+  - ./install-2.8.1.yaml
+
+patchesStrategicMerge:
+  - ./workflow-controller-configmap.yaml
+
 
 # generators:
 # - ./secret-generator.yaml
 
+# add runtime executor as Process Namespace, help:  https://argoproj.github.io/docs/argo/workflow-executors.html
+# configMapGenerator:
+#   - name: workflow-controller-configmap
+#     literals: 
+#       - containerRuntimeExecutor=pns
+#     behavior: merge
