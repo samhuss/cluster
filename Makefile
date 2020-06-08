@@ -2,6 +2,10 @@ version=v1.5.3
 clusterNamespace=argocd
 gpg-path=resources/gpg-keys
 gpg-fbs=8CC3DBB98A442086023F9766A5296C151AD0CA9E 4C70A838416441A4E5A476B46E17861CCB27B2FB
+# include environment variables of gitops, it has credentials for sops azure service account keys 
+# azure keys are required to encrypt/decrypt secret and credential files
+include ~/gitops.env
+export $(shell sed 's/=.*//' ~/gitops.env)
 
 help:		## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'

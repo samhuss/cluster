@@ -8,10 +8,10 @@ namespace: dev
 #   - ../base/postgres-simple
 
 resources:
-  - ./namespaces.yaml
+  # - ./namespaces.yaml
   - ../base/postgres-simple
   - ../base/keycloak
-  - ./application-argo-workflow.yaml
+  # - ./application-argo-workflow.yaml
   # - ./application-postgres-dev.yaml
   # - ../base/argo-workflow
 

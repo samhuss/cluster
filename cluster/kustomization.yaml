@@ -19,4 +19,5 @@ resources:
   - ./application-cert-manager.yaml
   - ./application-common.yaml  
   - ./application-bootstrap-ibm-dev.yaml
+  - ./application-argo-workflow.yaml
 

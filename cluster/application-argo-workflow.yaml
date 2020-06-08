@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argo-workflow
+  name: argo
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -11,6 +11,6 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: base/argo-workflow
+    path: base/argo
     repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
