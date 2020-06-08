@@ -11,8 +11,9 @@ resources:
   - ./namespaces.yaml
   - ../base/postgres-simple
   - ../base/keycloak
-  # - ./application-argo-workflow.yaml
+  - ./application-argo-workflow.yaml
   # - ./application-postgres-dev.yaml
+  # - ../base/argo-workflow
 
 # patches: 
 # - patch-argocd-repo-server.yaml
