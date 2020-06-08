@@ -5,8 +5,8 @@ kind: Kustomization
 namespace: argocd
 
 bases:
-# - github.com/argoproj/argo-cd//manifests/cluster-install?ref=v1.5.6
-- github.com/argoproj/argo-cd//manifests/cluster-install
+- github.com/argoproj/argo-cd//manifests/cluster-install?ref=v1.5.6
+# - github.com/argoproj/argo-cd//manifests/cluster-install
 
 # using downloaded version v1.5.5 for future reference and fast deployment
 # resources:
