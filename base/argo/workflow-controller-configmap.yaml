@@ -16,3 +16,5 @@ data:
       secretKeySecret:                #omit if accessing via AWS IAM
         name: minio-creds-secret
         key: secretKey
+  
+  # comment at the end to refresh the file
