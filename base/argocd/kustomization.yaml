@@ -20,7 +20,7 @@ patches:
 
 
 
-gvaenerators:
+generators:
   - ./secret-generator.yaml
 
 
