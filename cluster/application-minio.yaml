@@ -14,6 +14,6 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: minio
+    path: base/minio
     repoURL: git@eu-de.git.cloud.ibm.com:raseedyops/cluster-applications.git 
     targetRevision: HEAD
