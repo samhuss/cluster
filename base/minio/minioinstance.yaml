@@ -4,7 +4,7 @@ metadata:
   name: minio-creds-secret
 type: Opaque
 data:
-  accesskey: bWluaW8= # base 64 encoded "minio" (echo -n 'minio' | base64)
+  accesskey: bWluaW8= # base 64 encoded "minio" (echo -n 'minio' | base64) gg
   secretkey: bWluaW8xMjM= # based 64 encoded "minio123" (echo -n 'minio123' | base64)
 ---
 apiVersion: v1
