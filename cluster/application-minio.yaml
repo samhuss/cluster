@@ -14,9 +14,9 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: stable/minio
+    path: minio
     repoURL: https://kubernetes-charts.storage.googleapis.com/
-    targetRevision: HEAD
+    targetRevision: 5.0.26
     helm:
       values: |
         service.type=LoadBalancer
