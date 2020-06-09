@@ -28,11 +28,11 @@ roleRef:
   name: argo-cr
 subjects:
   - kind: ServiceAccount
-    name: argo
+    name: workflow
     namespace: default
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   namespace: default
-  name: argo
+  name: workflow
