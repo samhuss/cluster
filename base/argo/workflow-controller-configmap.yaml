@@ -12,8 +12,8 @@ data:
       insecure: true                  #omit for S3/GCS. Needed when minio runs without TLS
       accessKeySecret:                #omit if accessing via AWS IAM
         name: minio-creds-secret
-        key: accessKey
+        key: accesskey
       secretKeySecret:                #omit if accessing via AWS IAM
         name: minio-creds-secret
-        key: secretKey
+        key: secretkey
       useSDKCreds: true    
