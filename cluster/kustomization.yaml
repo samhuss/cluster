@@ -18,7 +18,7 @@ resources:
   # - ./application-elasticsearch.yaml
   - ./application-cert-manager.yaml
   - ./application-common.yaml  
-  - ./application-bootstrap-ibm-dev.yaml
+  # - ./application-bootstrap-ibm-dev.yaml
   - ./application-argo-workflow.yaml
   - ./application-minio.yaml
 
