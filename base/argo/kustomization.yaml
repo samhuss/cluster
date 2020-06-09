@@ -6,8 +6,8 @@ namespace: argo
 
 # bases:
 #   - ../../../base/fluent-bit
-bases:
-  - ../minio
+# bases:
+#   - ../minio
 
 # Latest argocd 
   # curl -sLO https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml

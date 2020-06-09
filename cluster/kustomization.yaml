@@ -20,5 +20,5 @@ resources:
   - ./application-common.yaml  
   # - ./application-bootstrap-ibm-dev.yaml
   - ./application-argo-workflow.yaml
-  # - ./application-minio.yaml
+  - ./application-minio.yaml
 
