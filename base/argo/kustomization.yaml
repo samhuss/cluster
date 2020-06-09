@@ -6,6 +6,8 @@ namespace: argo
 
 # bases:
 #   - ../../../base/fluent-bit
+bases:
+  - ../minio
 
 # Latest argocd 
   # curl -sLO https://raw.githubusercontent.com/argoproj/argo/stable/manifests/install.yaml
@@ -13,6 +15,7 @@ namespace: argo
 
 resources:
   - ./install-2.8.1.yaml
+  - ./rbac.yaml
 
 patchesStrategicMerge:
   - ./workflow-controller-configmap.yaml
