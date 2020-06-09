@@ -21,8 +21,8 @@ patchesStrategicMerge:
   - ./workflow-controller-configmap.yaml
 
 
-# generators:
-# - ./secret-generator.yaml
+generators:
+- ./secret-generator.yaml
 
 # add runtime executor as Process Namespace, help:  https://argoproj.github.io/docs/argo/workflow-executors.html
 # configMapGenerator:
