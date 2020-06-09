@@ -16,7 +16,7 @@ spec:
   source:
     path: stable/minio
     repoURL: https://github.com/helm/charts/tree/master
-    targetRevision: HEAD
+    # targetRevision: HEAD
     helm:
       values: |
         service.type=LoadBalancer
