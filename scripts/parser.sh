@@ -90,7 +90,7 @@ incrementVersion(){
     if [ ! "$oldTag" ]; then
         # this is the very first commit, no previous commit, add new version directly
         local newVersion=$svc"/"$initialTag
-        echo "$svc: No Old version found, add service initial version: $newVersion"
+        echo "$svc:$newVersion initial tag added, No Old version found"
 
         # bash syntax for array
         # newTags+=($newVersion)
