@@ -14,10 +14,10 @@ initialTag=0.1
 # DIR="$( cd -P "$( dirname "$DIR" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
 
-newTags=""
+newTags
 
 # changed_services=() # changed services array
-latestTags=""
+latestTags
 
 # use lalst commit as current commit in comparising:
 CURRENT=`git log --all --oneline | head -1 | awk '{print $1}'`
@@ -74,7 +74,8 @@ incrementVersion(){
         # this is the very first commit, no previous commit, add new version directly
         local newVersion=$svc"/"$initialTag
         echo "$svc: No Old version found, add service initial version: $newVersion"
-
+        # newTags+=($newVersion)
+        # latestTags+=($newVersion)
         newTags+=$newVersion
         latestTags+=$newVersion
         return
@@ -102,7 +103,7 @@ incrementVersion(){
 
     if [ ! "$changed" ]; then 
         echo "$svc: no change since last commit $otag, keep old version: $otag"
-        latestTags+=($otag)
+        latestTags+=$otag
         return
     fi
 
@@ -114,8 +115,8 @@ incrementVersion(){
         # IFS='-' read -r -a tmp <<< $otag   # read variable to array tmp
         newVersion=$(echo "$otag" | sed -r 's/(.*)([0-9]+)$/echo "\1$((\2+1))"/ge')
         echo "$svc: promoting: $otag --> $newVersion"
-        newTags+=($newVersion)
-        latestTags+=($newVersion)
+        newTags+=$newVersion
+        latestTags+=$newVersion
         # echo "old tag version: ${tmp[1]}, new version: v$newVersion"
     fi
 
@@ -168,3 +169,4 @@ addNewTags
 echo "Tags to be used in builds: "
 #git --no-pager tag -l --sort="version:refname" | sed -s 's=/=:=g'
 git --no-pager tag -l  | sed -s 's=/=:=g'
+
