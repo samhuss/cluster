@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 # use current folder if no services root passed
