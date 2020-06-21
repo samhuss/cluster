@@ -74,8 +74,7 @@ incrementVersion(){
         # this is the very first commit, no previous commit, add new version directly
         local newVersion=$svc"/"$initialTag
         echo "$svc: No Old version found, add service initial version: $newVersion"
-        # newTags+=($newVersion)
-        # latestTags+=($newVersion)
+
         newTags+=$newVersion
         latestTags+=$newVersion
         return
