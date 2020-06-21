@@ -14,10 +14,10 @@ initialTag=0.1
 # DIR="$( cd -P "$( dirname "$DIR" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
 
-newTags=()
+newTags
 
 # changed_services=() # changed services array
-latestTags=()
+latestTags
 
 # use lalst commit as current commit in comparising:
 CURRENT=`git log --all --oneline | head -1 | awk '{print $1}'`
