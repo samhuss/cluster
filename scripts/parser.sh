@@ -1,9 +1,12 @@
 #! /bin/sh
 
+# set -ex
+#!/usr/bin/env bash
+#set -Eeo pipefail
+
 
 # use current folder if no services root passed
 DIR=$1
-addTags=$2
 pushChanges=$3
 initialTag=0.1
 
@@ -14,11 +17,12 @@ initialTag=0.1
 # DIR="$( cd -P "$( dirname "$DIR" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
 
-newTags
+newTags=""
+latestTags=""
 
 # changed_services=() # changed services array
-latestTags
 
+addTags=$2
 # use lalst commit as current commit in comparising:
 CURRENT=`git log --all --oneline | head -1 | awk '{print $1}'`
 echo "Last commit: $CURRENT"
@@ -65,30 +69,57 @@ versionNewChanges(){
 }
 
 incrementVersion(){
+
     svc=$1
     DIR=$1 
+
+    # check if current commit has tag for the service, if yes then return and don't update this service
+    # currTag=`git --no-pager tag -l | grep $svc`
+    currTag=`git tag --points-at $CURRENT | grep $svc`
+
+    if [ "$currTag" ]; then 
+        echo "$svc: $currTag, there is a tag in current commit, returning"
+        latestTags="${latestTags} $currTag"
+        return; 
+    fi
+
     # search for the last known tag for a service to compare current commit with the last konwn changed version
     oldTag=`git show-ref  --abbrev=6 --tags | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
+    echo "old tag for service $1: $oldTag"
 
     if [ ! "$oldTag" ]; then
         # this is the very first commit, no previous commit, add new version directly
         local newVersion=$svc"/"$initialTag
         echo "$svc: No Old version found, add service initial version: $newVersion"
+
+        # bash syntax for array
         # newTags+=($newVersion)
         # latestTags+=($newVersion)
-        newTags+="$newVersion"
-        latestTags+="$newVersion"
+
+        # sh syntax for array
+        newTags="${newTags} $newVersion"
+        latestTags="${latestTags} $newVersion"
+
         return
     fi
 
     # continue with the normal path, old version found and promot version if a change found in the directory
 
-    echo "$svc: old version: $oldTag"
 
-    oldTag="$oldTag"
-    commit="${oldTag[0]}"
-    otag="${oldTag[1]}"
+    # oldTag=($oldTag)
+    # oldTag=$oldTag
+    # commit=${oldTag[0]}
+    # otag=${oldTag[1]}
+    commit=`echo $oldTag | cut -d" " -f1`
+    otag=`eval echo $oldTag | cut -d" " -f2`
 
+    # commit= "$(echo $oldTag | cut -d' ' -f1)" #${oldTag[0]}
+    # otag= "$(echo $oldTag | cut -d' ' -f2)" #${oldTag[0]}
+    # otag=${oldTag[1]}
+
+    echo "$svc: old version: $oldTag,  old commit: $commit,  old tag: $otag"
+    # echo "$svc: "
+    # echo "$svc: "
 
     # in the very first run, there is no previous commit to compare against, so master will be the base commit
     # [ commit ] || commit="master"
@@ -102,8 +133,9 @@ incrementVersion(){
     changed=`git diff --quiet $CURRENT $commit -- $DIR || echo "changed"`
 
     if [ ! "$changed" ]; then 
-        echo "$svc: no change since last commit $otag, keep old version: $otag"
-        latestTags+="$otag"
+        echo "$svc: no change since last commit $commit, keep old version: $otag"
+        # latestTags+=($otag)
+        latestTags="${latestTags} $otag"
         return
     fi
 
@@ -113,10 +145,15 @@ incrementVersion(){
     if [ "$otag" ]; then
         # echo "incrementing svc:$svc, from tag: $otag, commit: $commit"
         # IFS='-' read -r -a tmp <<< $otag   # read variable to array tmp
-        newVersion=$(echo "$otag" | sed -r 's/(.*)([0-9]+)$/echo "\1$((\2+1))"/ge')
+        # newVersion=$(echo "$otag" | sed -r 's/(.*)([0-9]+)$/echo "\1$((\2+1))"/ge')   # bash version
+        newVersion=$(eval `echo "$otag" | sed -r 's/(.*)([0-9]+)$/echo "\1$((\2+1))"/g'`)   # sh version
         echo "$svc: promoting: $otag --> $newVersion"
-        newTags+=$newVersion
-        latestTags+=$newVersion
+
+        newTags="${newTags} $newVersion"
+        latestTags="${latestTags} $newVersion"
+
+        # newTags+=($newVersion)
+        # latestTags+=($newVersion)
         # echo "old tag version: ${tmp[1]}, new version: v$newVersion"
     fi
 
@@ -132,7 +169,8 @@ incrementVersion(){
 addNewTags(){
     if [ "$addTags" ]; then
         echo "adding new tags: true"
-        for tag in ${newTags[@]}; do
+        # for tag in ${newTags[@]}; do
+        for tag in ${newTags}; do
             echo "adding tag $tag"
             git tag $tag $CURRENT
         done 
@@ -153,9 +191,11 @@ echo "-------"
 
 echo "Finished checking all services"
 echo "Adding new tags to current commit for the changed services: "
-echo "+++> ${newTags[@]}"
+#echo "+++> ${newTags[@]}"
+echo "+++> ${newTags}"
 echo "Latest versions for all services: ready for release: "
-echo "===> ${latestTags[@]}"
+# echo "===> ${latestTags[@]}"  # bash syntax in case of using arrays (), in sh no arrays, just strings with spaces
+echo "===> $latestTags"
 
 addNewTags
 
@@ -166,7 +206,11 @@ addNewTags
 # list tags without blocking the prompt, add --no-pager to git command
 # git --no-pager tag -l
 
-echo "Tags to be used in builds: "
-#git --no-pager tag -l --sort="version:refname" | sed -s 's=/=:=g'
-git --no-pager tag -l  | sed -s 's=/=:=g'
+echo "Tags to be used in this builds"
+# git --no-pager tag -l --sort="version:refname" | sed -s 's=/=:=g'
+# git --no-pager tag -l  | sed  's=/=:=g'
+# git --no-pager tag -l  
 
+# list tags of current commit only, whether use HEAD or $CURRENT commit id
+# git tag --points-at $CURRENT | sed  's=/=:=g'
+git tag --points-at HEAD | sed  's=/=:=g'
