@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /bin/sh
 
 
 # use current folder if no services root passed
@@ -74,8 +74,10 @@ incrementVersion(){
         # this is the very first commit, no previous commit, add new version directly
         local newVersion=$svc"/"$initialTag
         echo "$svc: No Old version found, add service initial version: $newVersion"
-        newTags+=($newVersion)
-        latestTags+=($newVersion)
+        # newTags+=($newVersion)
+        # latestTags+=($newVersion)
+        newTags+=$newVersion
+        latestTags+=$newVersion
         return
     fi
 
@@ -83,7 +85,7 @@ incrementVersion(){
 
     echo "$svc: old version: $oldTag"
 
-    oldTag=($oldTag)
+    oldTag=$oldTag
     commit=${oldTag[0]}
     otag=${oldTag[1]}
 
