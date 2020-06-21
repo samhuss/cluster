@@ -76,8 +76,8 @@ incrementVersion(){
         echo "$svc: No Old version found, add service initial version: $newVersion"
         # newTags+=($newVersion)
         # latestTags+=($newVersion)
-        newTags+=$newVersion
-        latestTags+=$newVersion
+        newTags+="$newVersion"
+        latestTags+="$newVersion"
         return
     fi
 
@@ -85,9 +85,9 @@ incrementVersion(){
 
     echo "$svc: old version: $oldTag"
 
-    oldTag=$oldTag
-    commit=${oldTag[0]}
-    otag=${oldTag[1]}
+    oldTag="$oldTag"
+    commit="${oldTag[0]}"
+    otag="${oldTag[1]}"
 
 
     # in the very first run, there is no previous commit to compare against, so master will be the base commit
@@ -103,7 +103,7 @@ incrementVersion(){
 
     if [ ! "$changed" ]; then 
         echo "$svc: no change since last commit $otag, keep old version: $otag"
-        latestTags+=$otag
+        latestTags+="$otag"
         return
     fi
 
