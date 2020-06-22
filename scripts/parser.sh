@@ -175,7 +175,7 @@ addNewTags(){
             git tag $tag $CURRENT
         done 
         # push changes of current commit for not to re-build these packages again
-        git push
+        git push --tags
     else
 echo "----
 addTag argument is not passed to the command, no changes will be applied.  
