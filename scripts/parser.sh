@@ -214,3 +214,5 @@ echo "Tags to be used in this builds"
 # list tags of current commit only, whether use HEAD or $CURRENT commit id
 # git tag --points-at $CURRENT | sed  's=/=:=g'
 git tag --points-at HEAD | sed  's=/=:=g'
+git tag --points-at HEAD | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/tags
+echo "tags exported as json array under /tmp/tags  : " && cat /tmp/tags
