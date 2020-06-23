@@ -214,9 +214,13 @@ echo "Tags to be used in this builds"
 # list tags of current commit only, whether use HEAD or $CURRENT commit id
 # git tag --points-at $CURRENT | sed  's=/=:=g'
 tags=`git tag --points-at HEAD`
-echo $tags | sed  's=/=:=g' | paste -d 
-echo $tags | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
-echo $tags | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/services
+echo $tags
+# echo $tags | sed  's=/=:=g' | paste -d 
+printf %s\\n $tags | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
+printf %s\\n $tags | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/services
+
+# git tag --points-at HEAD | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
+# git tag --points-at HEAD | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/services
 
 echo "docker builds: " && cat /tmp/docker-builds
 echo "services: " && cat /tmp/services
