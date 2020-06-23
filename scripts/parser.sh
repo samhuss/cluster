@@ -206,7 +206,7 @@ addNewTags
 # list tags without blocking the prompt, add --no-pager to git command
 # git --no-pager tag -l
 
-echo "Tags to be used in this builds"
+echo "Tags to be used in this build"
 # git --no-pager tag -l --sort="version:refname" | sed -s 's=/=:=g'
 # git --no-pager tag -l  | sed  's=/=:=g'
 # git --no-pager tag -l  
@@ -241,15 +241,16 @@ if [ "$registry" ]; then
         if [ "$result" ]; then 
             echo "image exists, will not include in docker-builds"; 
         else 
-            newImages="${newImages} $image"
+            newImages="$image ${newImages}"
             echo "image $image doesnt exist in docker registry, will include in docker-builds " ; 
         fi;
     done
-    if [ $newImages ]; then 
+    if [ "$newImages" ]; then 
+        echo "exporting new /tmp/docker-builds and /tmp/services files"
         printf %s\\n $newImages | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
         printf %s\\n $newImages | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/services
     else
-        echo "no services to be built, all tags already has docker images"
+        echo "no services to be built, all tags have docker images"
         echo "[]" > /tmp/docker-builds
         echo "[]" > /tmp/services
     fi
