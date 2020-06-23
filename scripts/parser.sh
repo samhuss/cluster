@@ -247,7 +247,10 @@ if [ "$registry" ]; then
     done
     if [ $newImages ]; then 
         printf %s\\n $newImages | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
+        printf %s\\n $newImages | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/services
     else
+        echo "no services to be built, all tags already has docker images"
         echo "[]" > /tmp/docker-builds
+        echo "[]" > /tmp/services
     fi
 fi
