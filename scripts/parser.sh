@@ -229,7 +229,7 @@ if [ "$registry" ]; then
     newImages=""
     # url="https://$registry/v2/repository/$1/tags/$2"
     echo "docker registry found, checking docker images availablity before bilding new ones"
-    for image in ${latestTags}; do
+    for image in ${tags}; do
         echo "checking image: $image"
         repo=`echo $image | cut -d'/' -f1`
         tag=`echo $image | cut -d'/' -f2`
