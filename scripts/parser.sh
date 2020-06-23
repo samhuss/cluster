@@ -224,3 +224,30 @@ printf %s\\n $tags | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,
 
 echo "docker builds: " && cat /tmp/docker-builds
 echo "services: " && cat /tmp/services
+
+if [ "$registry" ]; then
+    newImages=""
+    # url="https://$registry/v2/repository/$1/tags/$2"
+    echo "docker registry found, checking docker images availablity before bilding new ones"
+    for image in ${latestTags}; do
+        echo "checking image: $image"
+        repo=`echo $image | cut -d'/' -f1`
+        tag=`echo $image | cut -d'/' -f2`
+        echo "checking image: $repo with tag $tag"
+        url="https://$registry/v2/$repo/tags/list"
+        echo "calling url: $url" 
+        result=`curl -s $url | grep \"$tag\"`
+        echo "curl result: $result"
+        if [ "$result" ]; then 
+            echo "image exists, will not include in docker-builds"; 
+        else 
+            newImages="${newImages} $image"
+            echo "image $image doesnt exist in docker registry, will include in docker-builds " ; 
+        fi;
+    done
+    if [ $newImages ]; then 
+        printf %s\\n $newImages | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
+    else
+        echo "[]" > /tmp/docker-builds
+    fi
+fi
