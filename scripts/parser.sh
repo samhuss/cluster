@@ -206,7 +206,7 @@ addNewTags
 # list tags without blocking the prompt, add --no-pager to git command
 # git --no-pager tag -l
 
-echo "Tags to be used in this build"
+echo "Tags to be used in this builds"
 # git --no-pager tag -l --sort="version:refname" | sed -s 's=/=:=g'
 # git --no-pager tag -l  | sed  's=/=:=g'
 # git --no-pager tag -l  
@@ -227,22 +227,24 @@ echo "services: " && cat /tmp/services
 
 if [ "$registry" ]; then
     newImages=""
+    echo "check all tags, latest tags from previous commits and new tags in this commit"
+    tags="${tags} ${latestTags}"
     # url="https://$registry/v2/repository/$1/tags/$2"
     echo "docker registry found, checking docker images availablity before bilding new ones"
     for image in ${tags}; do
-        echo "checking image: $image"
+        # echo "checking image: $image"
         repo=`echo $image | cut -d'/' -f1`
         tag=`echo $image | cut -d'/' -f2`
-        echo "checking image: $repo with tag $tag"
+        # echo "checking image: $repo with tag $tag"
         url="https://$registry/v2/$repo/tags/list"
-        echo "calling url: $url" 
+        # echo "calling url: $url" 
         result=`curl -s $url | grep \"$tag\"`
-        echo "curl result: $result"
+        # echo "curl result: $result"
         if [ "$result" ]; then 
-            echo "image exists, will not include in docker-builds"; 
+            echo "--- exclude: $image from docker builds"; 
         else 
             newImages="$image ${newImages}"
-            echo "image $image doesnt exist in docker registry, will include in docker-builds " ; 
+            echo "+++ include: $image in docker builds " ; 
         fi;
     done
     if [ "$newImages" ]; then 
@@ -255,3 +257,5 @@ if [ "$registry" ]; then
         echo "[]" > /tmp/services
     fi
 fi
+
+
