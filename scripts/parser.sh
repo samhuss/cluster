@@ -228,11 +228,15 @@ echo "services: " && cat /tmp/services
 if [ "$registry" ]; then
     newImages=""
     echo "check all tags, latest tags from previous commits and new tags in this commit"
-    tags="${tags} ${latestTags}"
+    # tags="${tags} ${latestTags}"
     # url="https://$registry/v2/repository/$1/tags/$2"
     echo "docker registry found, checking docker images availablity before bilding new ones"
-    for image in ${tags}; do
+    # for image in ${tags}; do
+    for svc in ${services}; do
         # echo "checking image: $image"
+        # most recent tags that were not built
+        image=`git tag -l --sort=-version:refname "$svc*" | head -1`
+        echo "$svc:     $image"
         repo=`echo $image | cut -d'/' -f1`
         tag=`echo $image | cut -d'/' -f2`
         # echo "checking image: $repo with tag $tag"
@@ -257,5 +261,7 @@ if [ "$registry" ]; then
         echo "[]" > /tmp/services
     fi
 fi
+
+
 
 
