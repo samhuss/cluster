@@ -262,6 +262,44 @@ if [ "$registry" ]; then
     fi
 fi
 
+# if builderTemplate xml file is loaded as env variable, read all .env files and load modules property to generate 
+# builder-pom.xml file in each project for each java project
+
+# modulesPath sample: ./test-mpn-bulk-registration/.env:modules=Utils
+
+pomTemplate=`cat<<EOT
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<groupId>com.raseedy</groupId>
+<artifactId>be-builder</artifactId>
+<version>0.0.9</version>
+<name>builder</name>
+<properties> <java.version>1.8</java.version> </properties>
+<packaging>pom</packaging>
+<modules>
+##modules##
+ <module>.</module> 
+</modules>
+EOT
+`
+
+for service in $services;do
+
+    modules=`grep -E 'modules=' $service/.env | cut -f2 -d=`
+    modulesString=""
+    for module in $modules; do
+        modulesString="${modulesString} <module>$module</module>\n"
+    done
+    echo "modulesString $modulesString"
+    pom=${pomTemplate//##modules##/$modulesString}
+    # pom=`sed -n 's/\${modulesString}/$modulesString/g' $pomTemplate`
+    printf "$pom" | tee $service/builder-pom.xml
+
+    # printf %s $pomTemplate  
+    # echo writing builder-pom.xml to service directory
+    # echo $pom | tee "$service/builder-pom.xml"
+done
+
 
 
 
