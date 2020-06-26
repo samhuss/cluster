@@ -280,6 +280,7 @@ pomTemplate=`cat<<EOT
 ##modules##
  <module>.</module> 
 </modules>
+</project>
 EOT
 `
 
