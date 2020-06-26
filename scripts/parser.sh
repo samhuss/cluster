@@ -299,7 +299,6 @@ for service in $services;do
     # printf %s $pomTemplate  
     # echo writing builder-pom.xml to service directory
     # echo $pom | tee "$service/builder-pom.xml"
-    
 done
 
 
