@@ -289,7 +289,7 @@ for service in $services;do
     modules=`grep -E 'modules=' $service/.env | cut -f2 -d=`
     modulesString=""
     for module in $modules; do
-        modulesString="${modulesString} <module>$module</module>\n"
+        modulesString="${modulesString} <module>../$module</module>\n"
     done
     echo "modulesString $modulesString"
     pom=${pomTemplate//##modules##/$modulesString}
