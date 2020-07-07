@@ -84,7 +84,9 @@ incrementVersion(){
     fi
 
     # search for the last known tag for a service to compare current commit with the last konwn changed version
-    oldTag=`git show-ref  --abbrev=6 --tags | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
+    #oldTag=`git show-ref  --abbrev=6 --tags | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
+    # oldTag=`git tag -l --sort=-version:refname | grep $svc | head -1 |  awk '{print $1 " " $2 }'`
+    oldTag=`git for-each-ref --sort=creatordate --format '%(refname)' refs/tags  | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
     echo "old tag for service $1: $oldTag"
 
     if [ ! "$oldTag" ]; then
