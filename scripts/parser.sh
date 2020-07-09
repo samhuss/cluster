@@ -84,7 +84,9 @@ incrementVersion(){
     fi
 
     # search for the last known tag for a service to compare current commit with the last konwn changed version
+    # error: show-ref doesn't sort by date, alphanumeric search only
     #oldTag=`git show-ref  --abbrev=6 --tags | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
+
     # oldTag=`git tag -l --sort=-version:refname | grep $svc | head -1 |  awk '{print $1 " " $2 }'`
     # oldTag=`git for-each-ref --sort=creatordate --format '%(refname)' refs/tags  | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
     oldTag=`git for-each-ref --sort=creatordate --format '%(objectname:short) %(refname:short)' refs/tags  | grep $svc | tail -1`
@@ -240,10 +242,10 @@ if [ "$registry" ]; then
         # most recent tags that were not built
 
         # git tag doesn't sort by date, sort alphanumeric, this line returns wrong name for last image
-        # image=`git tag -l --sort=-version:refname "$svc*" | head -1`  
+        image=`git tag -l --sort=-version:refname "$svc*" | head -1`  
 
         # use for-each-ref to get all tags sorted by date
-        image=`git for-each-ref --sort=creatordate --format '%(refname:short)' refs/tags  | grep $svc | tail -1`
+        # image=`git for-each-ref --sort=creatordate --format '%(refname:short)' refs/tags  | grep $svc | tail -1`
         echo "$svc:     $image"
         repo=`echo $image | cut -d'/' -f1`
         tag=`echo $image | cut -d'/' -f2`
@@ -279,33 +281,79 @@ pomTemplate=`cat<<EOT
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
 <groupId>com.raseedy</groupId>
-<artifactId>be-builder</artifactId>
-<version>0.0.9</version>
-<name>builder</name>
+<artifactId>utils-builder</artifactId>
+<version>0.0.10</version>
+<name>utils-builder</name>
 <properties> <java.version>1.8</java.version> </properties>
 <packaging>pom</packaging>
 <modules>
 ##modules##
- <module>.</module> 
 </modules>
 </project>
 EOT
 `
+#  <module>.</module> 
 
+# loop on all services, read modules= property from .env, then create one pom file for all utility modules 
+# to be executed before building all servcies
+
+allModules=""
+modulesString=""
 for service in $services;do
 
     modules=`grep -E 'modules=' $service/.env | cut -f2 -d=`
-    modulesString=""
     for module in $modules; do
-        modulesString="${modulesString} <module>../$module</module>\n"
+        alreadyInModules=`echo $allModules | grep $module`
+        if [ -z "$alreadyInModules" ]; then
+            allModules="${allModules} $module"
+            # modulesString="${modulesString} $module"
+        fi
     done
-    # echo "modulesString $modulesString"
-    pom=${pomTemplate//##modules##/$modulesString}
-    # pom=`sed -n 's/\${modulesString}/$modulesString/g' $pomTemplate`
-    # printf "$pom" | tee $service/builder-pom.xml
-    printf "$pom" > $service/builder-pom.xml
 
-    # printf %s $pomTemplate  
-    # echo writing builder-pom.xml to service directory
-    # echo $pom | tee "$service/builder-pom.xml"
+    # modulesString="${modulesString} <module>../$module</module>\n"
+
 done
+
+# build one pom file for all utility projects
+
+echo "modules to be built as utilsity projects"
+echo $allModules
+
+for module in $allModules; do
+    modulesString="${modulesString} <module>$module</module>\n"
+    # modulesString="${modulesString} $module"
+done
+
+# echo "modulesString $modulesString"
+pom=${pomTemplate//##modules##/$modulesString}
+# printf "$pom" | tee $service/builder-pom.xml
+printf "$pom" > utils-pom.xml
+
+
+
+# printf %s $pomTemplate  
+# echo writing builder-pom.xml to service directory
+# echo $pom | tee "$service/builder-pom.xml"
+
+# allModules=""
+# for service in $services;do
+
+#     modules=`grep -E 'modules=' $service/.env | cut -f2 -d=`
+#     modulesString=""
+#     for module in $modules; do
+#         alreadyInModules=`echo modulesString | grep $module`
+#         if [[ ! alreadyInModules ]]; then
+#             modulesString="${modulesString} <module>../$module</module>\n"
+#         fi
+#     done
+#     # echo "modulesString $modulesString"
+#     pom=${pomTemplate//##modules##/$modulesString}
+#     # pom=`sed -n 's/\${modulesString}/$modulesString/g' $pomTemplate`
+#     # printf "$pom" | tee $service/builder-pom.xml
+#     printf "$pom" > $service/builder-pom.xml
+
+#     # printf %s $pomTemplate  
+#     # echo writing builder-pom.xml to service directory
+#     # echo $pom | tee "$service/builder-pom.xml"
+# done
+
