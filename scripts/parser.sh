@@ -302,7 +302,8 @@ for service in $services;do
     # echo "modulesString $modulesString"
     pom=${pomTemplate//##modules##/$modulesString}
     # pom=`sed -n 's/\${modulesString}/$modulesString/g' $pomTemplate`
-    printf "$pom" | tee $service/builder-pom.xml
+    # printf "$pom" | tee $service/builder-pom.xml
+    printf "$pom" > $service/builder-pom.xml
 
     # printf %s $pomTemplate  
     # echo writing builder-pom.xml to service directory
