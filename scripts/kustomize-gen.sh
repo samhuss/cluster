@@ -381,6 +381,17 @@ createDeploymentFiles(){
 
 }
 
+commitChanges(){
+  echo "submitting changes to CD repo"
+  current=`git -C $from log --tags --simplify-by-decoration --pretty='format:%ai %d' | head -1`
+  msg="ci-cd workflow update::Apps: ${appsName}, for commit: $current"
+  git add . 
+  git -c user.name='argo-ci-cd-workflow' -c user.email='shussein@raseedyapp.com' commit -m "$msg" 
+  git push
+
+}
+
 # git -C $from pull --tags
 
 createServicesDir
+commitChanges
