@@ -23,8 +23,8 @@ envInPath=${envInPath:-"dev."}
 env=${env:-"dev"}
 tag=0.1
 
-base=$to/base
-overlay=$to/$3/$env
+base=$to/base/$appsName
+overlay=$to/$appsName/$env
 # apiUrls="api.dev.raseedy.io api.stg.raseedy.io"
 repo="reg.dev.raseedy.io"
 
@@ -192,6 +192,7 @@ ingressesInternal=""
 
 createServicesDir(){
     mkdir -p $overlay 2>/dev/null
+    mkdir -p $base 2>/dev/null
 
     services=`grep -lE 'service.deploy=true' ./**/.env | cut -d '/' -f2 2>/dev/null`
     # services=`grep -lE 'service.deploy=true' ./**/.env`
@@ -200,7 +201,7 @@ createServicesDir(){
         echo "service: $svc"
         # echo "${svc#env#}" 
         createDeploymentFiles $svc 
-        bases="- ../../base/$svc \n${bases}"
+        bases="- ../../base/$appsName/$svc \n${bases}"
         ingresses="- ingress-${svc}-${env}.yaml \n${ingresses}"
     done
 
@@ -236,8 +237,7 @@ createEnvCustomizationFromRegistry(){
     # get last built container tag like: 0.13
     tag=`printf "$sortedTags" | tail -1` 
 
-    echo "tags for service $svc: $sortedTags"
-    echo "latest built image tag: $tag"
+    echo "latest built image tag: $svc :: $tag"
 
     # tag=`printf "$allTags" | grep $svc | head -1 `
     # tag=${tag##*/}
@@ -386,7 +386,6 @@ commitChanges(){
   current=`git -C $from log --tags --simplify-by-decoration --pretty='format:%ai %d' | head -1`
   msg="ci-cd workflow update::Apps: ${appsName}, for commit: $current"
   cd $to
-  echo "running git commands from directory: $(pwd)"
   git add . 
   git -c user.name='argo-ci-cd-workflow' -c user.email='shussein@raseedyapp.com' commit -am "$msg" 
   git push
