@@ -24,7 +24,7 @@ env=${env:-"dev"}
 tag=0.1
 
 base=$to/base/$appsName
-overlay=$to/$appsName/$env
+overlay=$to/$env/$appsName
 # apiUrls="api.dev.raseedy.io api.stg.raseedy.io"
 repo="reg.dev.raseedy.io"
 
