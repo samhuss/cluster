@@ -231,7 +231,7 @@ createEnvCustomizationFromRegistry(){
 
     sortedTags=`echo $result | sed -r "s/.*\[(.*)]}/\1/g;s/\"//g" | tr , '\n' | sort -t. -k1,1n -k2,2n -k3,3n -k4,4n`
     # tagsCount=`echo $sortedTags | wc -l`
-    echo "sorted tags: $sortedTags"
+    # echo "sorted tags: $sortedTags"
 
     # get last built container tag like: 0.13
     tag=`printf "$sortedTags" | tail -1` 
