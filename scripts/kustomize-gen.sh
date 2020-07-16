@@ -3,7 +3,10 @@
 from=$1
 to=$2
 appsName=$3
+
 repo=${4:-$repo}  # get 4th parameter or use exported variable 'repo' from environment variables
+
+env=${5:-"dev"}
 
 if [ ! "$repo" ]; then
   echo "docker registry is not defined, should be passed as 4th parameter"
@@ -19,8 +22,8 @@ cd $from
 ingPort=80
 svcPort=8080
 svcVersion=${svcVersion:-"0.1"}
-envInPath=${envInPath:-"dev."}
-env=${env:-"dev"}
+# env=${env:-"dev"}
+envInPath=${envInPath:-"$env."}
 tag=0.1
 
 base=$to/base/$appsName
@@ -140,8 +143,7 @@ spec:
 
 envTmpl='
         - name: #name#
-          value: "#value#"
-'
+          value: "#value#"'
 
 svcKustomization='apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -311,15 +313,24 @@ createDeploymentFiles(){
     mkdir -p $base/$svc 2>/dev/null
 
     # generate environment variables from every line in .env that starts with var.
-    envVars=`grep -E 'env.' $from/$svcDir/.env | sed 's/env.//g'`
+    envVars=`grep -E "^env." $from/$svcDir/.env | sed 's/env.//g'`
     echo "found environment variables: $envVars"
     for var in $envVars; do
         # name=; value=
         newEnv=${envTmpl//#name#/${var%=*}}; newEnv=${newEnv//#value#/${var#*=}}
         # newEnv=`printf "$envTmpl" | sed "s/{name}/$name/g;s/{value}/$value/g"`
-        allEnv="${allEnv}  ${newEnv}"
+        allEnv="${allEnv} ${newEnv}"
     done
 
+    # generate environment variables from specific environment like dev,stg,prod from every line in .env that starts with $env.var
+    envVars=`grep -E "^$env.env." $from/$svcDir/.env | sed "s/${env}.env.//g"`
+    echo "found environment variables for $env environment: $envVars"
+    for var in $envVars; do
+        # name=; value=
+        newEnv=${envTmpl//#name#/${var%=*}}; newEnv=${newEnv//#value#/${var#*=}}
+        # newEnv=`printf "$envTmpl" | sed "s/{name}/$name/g;s/{value}/$value/g"`
+        allEnv="${allEnv} ${newEnv}"
+    done
     # generate all secrets
     # for var in { 1..3 }; do
     #     newEnv=`printf "$envTmpl" | sed "s/{name}/variable-name/;s/{value}/value-here/"`
@@ -366,7 +377,7 @@ createDeploymentFiles(){
 
 
     # generate application.properties for config map
-    properties=`grep -E 'prop.' $from/$svcDir/.env | sed 's/prop.//g'`
+    properties=`grep -E '^prop.' $from/$svcDir/.env | sed 's/prop.//g'`
     echo ""
     echo "found properties: "
     printf "$properties" | tee $target/application.properties
