@@ -24,8 +24,17 @@ latestTags=""
 
 addTags=$2
 # use lalst commit as current commit in comparising:
-CURRENT=`git log --all --oneline | head -1 | awk '{print $1}'`
-echo "Last commit: $CURRENT"
+#CURRENT=`git log --all --oneline | head -1 | awk '{print $1}'`
+
+# fix getting last commit for current branch. --all  gets the latest commit for all branches 
+# while we want the last commit of the current branch
+
+currentBranch=`git branch | grep "\*"`
+# currentCommit=`git log --oneline -n 1 HEAD | head -1`
+currentCommit=`git log --oneline --decorate -n 1 HEAD `
+CURRENT=`echo $currentCommit | awk '{print $1}'`
+# CURRENT=`git log --oneline -n 1 HEAD | head -1 | awk '{print $1}'`
+echo "Current branch: $currentBranch , current commit: $currentCommit"
 
 
 versionNewChanges(){
@@ -75,14 +84,20 @@ incrementVersion(){
 
     # check if current commit has tag for the service, if yes then return and don't update this service
     # currTag=`git --no-pager tag -l | grep $svc`
-    currTag=`git tag --points-at $CURRENT | grep $svc`
+    # currTag=`git tag --points-at $CURRENT | grep $svc`
+    # currTag=`git tag --points-at HEAD | grep $svc`
+
+    # currentCommit has all tag names, check if service name is already in the latest commit which means no changes
+    currTag=`echo $currentCommit | grep $svc`
+
 
     if [ "$currTag" ]; then 
-        echo "$svc: $currTag, there is a tag in current commit, returning"
+        echo "Returning: found tag for service $svc current commit: $currTag"
         latestTags="${latestTags} $currTag"
         return; 
     fi
 
+    echo "no current tag found, promoting last known tag for the service"
     # search for the last known tag for a service to compare current commit with the last konwn changed version
     # error: show-ref doesn't sort by date, alphanumeric search only
     #oldTag=`git show-ref  --abbrev=6 --tags | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
@@ -90,12 +105,11 @@ incrementVersion(){
     # oldTag=`git tag -l --sort=-version:refname | grep $svc | head -1 |  awk '{print $1 " " $2 }'`
     # oldTag=`git for-each-ref --sort=creatordate --format '%(refname)' refs/tags  | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
     oldTag=`git for-each-ref --sort=creatordate --format '%(objectname:short) %(refname:short)' refs/tags  | grep $svc | tail -1`
-    echo "old tag for service $1: $oldTag"
 
     if [ ! "$oldTag" ]; then
         # this is the very first commit, no previous commit, add new version directly
         local newVersion=$svc"/"$initialTag
-        echo "$svc:$newVersion initial tag added, No Old version found"
+        echo "No Old tag found, initial tag added: $svc:$newVersion"
 
         # bash syntax for array
         # newTags+=($newVersion)
@@ -107,6 +121,7 @@ incrementVersion(){
 
         return
     fi
+
 
     # continue with the normal path, old version found and promot version if a change found in the directory
 
@@ -122,9 +137,6 @@ incrementVersion(){
     # otag= "$(echo $oldTag | cut -d' ' -f2)" #${oldTag[0]}
     # otag=${oldTag[1]}
 
-    echo "$svc: old version: $oldTag,  old commit: $commit,  old tag: $otag"
-    # echo "$svc: "
-    # echo "$svc: "
 
     # in the very first run, there is no previous commit to compare against, so master will be the base commit
     # [ commit ] || commit="master"
@@ -135,7 +147,8 @@ incrementVersion(){
     # changed=`git diff --quiet HEAD $commit -- $DIR`
     #echo "command: git diff --quiet $CURRENT $commit -- $DIR"
 
-    changed=`git diff --quiet $CURRENT $commit -- $DIR || echo "changed"`
+    # changed=`git diff --quiet $CURRENT $commit -- $DIR || echo "changed"`
+    changed=`git diff --quiet HEAD $commit -- $DIR || echo "changed"`
 
     if [ ! "$changed" ]; then 
         echo "$svc: no change since last commit $commit, keep old version: $otag"
@@ -144,7 +157,6 @@ incrementVersion(){
         return
     fi
 
-    echo "$svc: changed, promoting version"
     local newVersion=""
 
     if [ "$otag" ]; then
@@ -152,7 +164,7 @@ incrementVersion(){
         # IFS='-' read -r -a tmp <<< $otag   # read variable to array tmp
         # newVersion=$(echo "$otag" | sed -r 's/(.*)([0-9]+)$/echo "\1$((\2+1))"/ge')   # bash version
         newVersion=$(eval `echo "$otag" | sed -r 's/(.*)([0-9]+)$/echo "\1$((\2+1))"/g'`)   # sh version
-        echo "$svc: promoting: $otag --> $newVersion"
+        echo "promoting tag: $otag --> $newVersion"
 
         newTags="${newTags} $newVersion"
         latestTags="${latestTags} $newVersion"
@@ -177,7 +189,8 @@ addNewTags(){
         # for tag in ${newTags[@]}; do
         for tag in ${newTags}; do
             echo "adding tag $tag"
-            git tag $tag $CURRENT
+            # git tag $tag $CURRENT
+            git tag $tag HEAD
         done 
         # push changes of current commit for not to re-build these packages again
         git push --tags
@@ -227,8 +240,8 @@ printf %s\\n $tags | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,
 # git tag --points-at HEAD | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
 # git tag --points-at HEAD | sed 's=/.*==;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/services
 
-echo "docker builds: " && cat /tmp/docker-builds
-echo "services: " && cat /tmp/services
+echo "docker builds as array: " && cat /tmp/docker-builds
+echo "services as array: " && cat /tmp/services
 
 if [ "$registry" ]; then
     newImages=""
