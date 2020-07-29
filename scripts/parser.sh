@@ -184,7 +184,7 @@ incrementServiceVersion(){
     #echo "command: git diff --quiet $CURRENT $commit -- $svc"
 
     # changed=`git diff --quiet $CURRENT $commit -- $svc || echo "changed"`
-    changed=`git -C $gitDir diff --quiet HEAD $commit -- . || echo "changed"`
+    changed=`git -C $svc diff --quiet HEAD $commit -- . || echo "changed"`
 
     if [ ! "$changed" ]; then 
         echo "$svc: no change since last commit $commit, keep old version: $otag"
