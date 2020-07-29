@@ -9,6 +9,8 @@
 DIR=$1
 pushChanges=$3
 initialTag=0.1
+isMonoRepo="true"
+serviceName=""  # used in case of multi-repo and only one repo to be checked
 
 # [ $DIR ] ||  DIR=${BASH_SOURCE[0]}
 [ $DIR ] ||  DIR=$(pwd)
@@ -16,6 +18,41 @@ initialTag=0.1
 # DIR="$( cd "$( dirname "${DIR}" )" >/dev/null 2>&1 && pwd )"
 # DIR="$( cd -P "$( dirname "$DIR" )" >/dev/null 2>&1 && pwd )"
 cd $DIR
+# keep directory full path for reference
+RootDir=`pwd`
+
+ # check if repo is multi-repo or mono-repo. Mono-repo will contain multiple projects under the parent directory
+ # multi-repo means every repo contains one project, so we have to cd into that project to start using git commands
+
+gitDir=$DIR
+
+servicesCount=`ls | wc -l`
+echo "sub directories of passed root are: $servicesCount"
+
+if [ ! $servicesCount -eq "1" ]; then
+    echo "passed root has more than 1 service, build mode is mono-repo, will work on all sub directories of: $DIR"
+    isMonoRepo="true"
+else
+    echo "passed root has $servicesCount directory, build mode is multi-repo, will use the first directory as the main git directory"
+    gitDir="$gitDir/`ls | head -1`"
+    echo "using new git directory: $gitDir"
+    isMonoRepo="false"
+fi
+
+
+# subProjectsCount=0
+# subProjectsCount=`ls | wc -l`
+
+
+# echo "passed git directory: $gitDir"
+# echo "sub directories count of passed git directory: $subProjectsCount"
+
+# # if (($subProjectsCount == 1)); then 
+# if [ $subProjectsCount -eq 1 ]; then 
+#     gitDir="$gitDir/`ls`"
+#     isMonoRepo="false"
+#     echo "Working on one service under passed git directory, thus all git commands will run from service directory: $gitDir" 
+# fi 
 
 newTags=""
 latestTags=""
@@ -26,25 +63,26 @@ addTags=$2
 # use lalst commit as current commit in comparising:
 #CURRENT=`git log --all --oneline | head -1 | awk '{print $1}'`
 
-# fix getting last commit for current branch. --all  gets the latest commit for all branches 
-# while we want the last commit of the current branch
-
-currentBranch=`git branch | grep "\*"`
-# currentCommit=`git log --oneline -n 1 HEAD | head -1`
-currentCommit=`git log --oneline --decorate -n 1 HEAD `
-CURRENT=`echo $currentCommit | awk '{print $1}'`
-# CURRENT=`git log --oneline -n 1 HEAD | head -1 | awk '{print $1}'`
-echo "Current branch: $currentBranch , current commit: $currentCommit"
-
-
 versionNewChanges(){
+    # fix getting last commit for current branch. --all  gets the latest commit for all branches 
+    # while we want the last commit of the current branch
+    currentBranch=`git -C $gitDir branch | grep "\*"`
+    # currentCommit=`git log --oneline -n 1 HEAD | head -1`
+    currentCommit=`git -C $gitDir log --oneline --decorate -n 1 HEAD `
+    CURRENT=`echo $currentCommit | awk '{print $1}'`
+    # CURRENT=`git log --oneline -n 1 HEAD | head -1 | awk '{print $1}'`
+    echo "Current branch: $currentBranch"
+    echo "Current commit: $currentCommit"
+    # serviceName not found, means working with mono-repo, list all sub directories
     # find all sub directories that represents deployable services, each directory will be a microservice
     services=`grep -lE 'service.deploy=true' ./**/.env | cut -d '/' -f2 2>/dev/null`
+    
     #services=`echo */ | sed -e 's=/==g' `
-    echo "Trieggered by a commit at: $(date)"
-    echo "Root services directory: $DIR, path: $(pwd)"
-    echo "-> Checking all microservices for new changes, only changed microservices version will be promoted" 
-    echo "Checking services:  " 
+    echo "Find and promote changed services with new tags."
+    echo "Root directory: $DIR"
+    echo "Git directory: $gitDir"
+    echo "isMonoRepo: $isMonoRepo"
+    echo "--> Checking following microservices for new changes, only services with .env file will be checked and promoted" 
     echo "$services"  
 
     local changed=0
@@ -52,7 +90,7 @@ versionNewChanges(){
     for SVC in $services; do 
         echo "----"
         echo "$SVC: comparing current commit with last service release"
-        incrementVersion $SVC
+        incrementServiceVersion $SVC
     done;
 
     # echo "all services with echo: "
@@ -77,10 +115,8 @@ versionNewChanges(){
 
 }
 
-incrementVersion(){
-
+incrementServiceVersion(){
     svc=$1
-    DIR=$1 
 
     # check if current commit has tag for the service, if yes then return and don't update this service
     # currTag=`git --no-pager tag -l | grep $svc`
@@ -104,7 +140,7 @@ incrementVersion(){
 
     # oldTag=`git tag -l --sort=-version:refname | grep $svc | head -1 |  awk '{print $1 " " $2 }'`
     # oldTag=`git for-each-ref --sort=creatordate --format '%(refname)' refs/tags  | grep $svc | tail -1 | sed -e 's=refs/tags/==g' | awk '{print $1 " " $2 }'`
-    oldTag=`git for-each-ref --sort=creatordate --format '%(objectname:short) %(refname:short)' refs/tags  | grep $svc | tail -1`
+    oldTag=`git -C $gitDir for-each-ref --sort=creatordate --format '%(objectname:short) %(refname:short)' refs/tags  | grep $svc | tail -1`
 
     if [ ! "$oldTag" ]; then
         # this is the very first commit, no previous commit, add new version directly
@@ -142,13 +178,13 @@ incrementVersion(){
     # [ commit ] || commit="master"
 
     # shortcut code to check changed directories
-    # git diff --quiet HEAD $REF -- $DIR || changed=1 && printf "$SVC: changed \n"
+    # git diff --quiet HEAD $REF -- $svc || changed=1 && printf "$SVC: changed \n"
 
-    # changed=`git diff --quiet HEAD $commit -- $DIR`
-    #echo "command: git diff --quiet $CURRENT $commit -- $DIR"
+    # changed=`git diff --quiet HEAD $commit -- $svc`
+    #echo "command: git diff --quiet $CURRENT $commit -- $svc"
 
-    # changed=`git diff --quiet $CURRENT $commit -- $DIR || echo "changed"`
-    changed=`git diff --quiet HEAD $commit -- $DIR || echo "changed"`
+    # changed=`git diff --quiet $CURRENT $commit -- $svc || echo "changed"`
+    changed=`git -C $gitDir diff --quiet HEAD $commit -- $svc || echo "changed"`
 
     if [ ! "$changed" ]; then 
         echo "$svc: no change since last commit $commit, keep old version: $otag"
@@ -190,10 +226,10 @@ addNewTags(){
         for tag in ${newTags}; do
             echo "adding tag $tag"
             # git tag $tag $CURRENT
-            git tag $tag HEAD
+            git -C $gitDir tag $tag HEAD
         done 
         # push changes of current commit for not to re-build these packages again
-        git push --tags
+        git -C $gitDir push --tags
     else
 echo "----
 addTag argument is not passed to the command, no changes will be applied.  
@@ -231,7 +267,7 @@ echo "Tags to be used in this builds"
 
 # list tags of current commit only, whether use HEAD or $CURRENT commit id
 # git tag --points-at $CURRENT | sed  's=/=:=g'
-tags=`git tag --points-at HEAD`
+tags=`git -C $gitDir tag --points-at HEAD`
 echo $tags
 # echo $tags | sed  's=/=:=g' | paste -d 
 printf %s\\n $tags | sed 's=/=:=;s/["\]/\\&/g;s/.*/"&"/;1s/^/[/;$s/$/]/;$!s/$/,/' > /tmp/docker-builds
@@ -255,7 +291,7 @@ if [ "$registry" ]; then
         # most recent tags that were not built
 
         # git tag doesn't sort by date, sort alphanumeric, this line returns wrong name for last image
-        image=`git tag -l --sort=-version:refname "$svc*" | head -1`  
+        image=`git -C $gitDir tag -l --sort=-version:refname "$svc*" | head -1`  
 
         # use for-each-ref to get all tags sorted by date
         # image=`git for-each-ref --sort=creatordate --format '%(refname:short)' refs/tags  | grep $svc | tail -1`
@@ -324,7 +360,6 @@ for service in $services;do
     done
 
     # modulesString="${modulesString} <module>../$module</module>\n"
-
 done
 
 # build one pom file for all utility projects
@@ -339,8 +374,15 @@ done
 
 # echo "modulesString $modulesString"
 pom=${pomTemplate//##modules##/$modulesString}
-# printf "$pom" | tee $service/builder-pom.xml
-printf "$pom" > utils-pom.xml
+
+
+# print utils-pom file only if build is for mono-repo, only use case is build java mono-repo
+if [ "$modulesString" ]; then 
+    printf "$pom" > utils-pom.xml
+    echo "true" > /src/build-utils
+else
+    echo "false" > /src/build-utils
+fi
 
 
 
