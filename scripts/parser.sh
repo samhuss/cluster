@@ -377,11 +377,11 @@ pom=${pomTemplate//##modules##/$modulesString}
 
 
 # print utils-pom file only if build is for mono-repo, only use case is build java mono-repo
-if [ "$modulesString" ]; then 
+if [[ "$modulesString" && "$newImages" ]]; then 
     printf "$pom" > utils-pom.xml
-    echo "true" > /src/build-utils
+    echo "true" > /tmp/build-utils
 else
-    echo "false" > /src/build-utils
+    echo "false" > /tmp/build-utils
 fi
 
 
