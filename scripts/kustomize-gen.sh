@@ -3,11 +3,13 @@
 from=$1
 to=$2
 appsName=$3
-
 repo=${4:-$repo}  # get 4th parameter or use exported variable 'repo' from environment variables
-
 env=${5:-"dev"}
 
+# nameSuffix="-$env"
+nameSuffix=""
+namePrefix=""
+# namePrefix="$env-"
 if [ ! "$repo" ]; then
   echo "docker registry is not defined, should be passed as 4th parameter"
   exit 1
@@ -35,20 +37,20 @@ deploymentTmp='apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: {svc}
+    app: {svcLabel}
   name: {svc}
 spec:
   selector:
     matchLabels:
-      app: {svc}
+      app: {svcLabel}
   revisionHistoryLimit: 11
   minReadySeconds: 0
   template:
     metadata:
       labels:
-        app: {svc}
+        app: {svcLabel}
     spec:
-      # serviceAccountName: dev
+      # serviceAccountName: {saName}
       hostAliases:
       - ip: "10.232.16.116"
         hostnames:
@@ -58,10 +60,12 @@ spec:
         image: {repo}/{svcImage}:{svcVersion}
         env:
         - name: service_name
-          value: {svc}
-        # --generated env
+          value: {svcLabel}
         ##env##
-        # --end generated env
+        #volumeMounts#
+      #volumes#
+        #javaVolumes#
+
         volumeMounts:
         - name: {svc}-config-volume
           mountPath: "/app/config"
@@ -72,12 +76,13 @@ spec:
           items:
           - key: application.properties
             path: application.properties
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: {svc}
+  labels:
+    app: {svcLabel}
 spec:
   type: ClusterIP
   ports:
@@ -85,7 +90,7 @@ spec:
       targetPort: {svcPort}
       protocol: TCP
   selector:
-    app: {svc}
+    app: {svcLabel}
 ---
 '
 
@@ -100,20 +105,23 @@ metadata:
     konghq.com/strip-path: "true"
     # konghq.com/plugins: keyauth
     # konghq.com/plugins: oidc-dev
-    env: "{env}"
     ##annotations##
+  labels:
+    app: {svcLabel}
+    type: ingressExternal
 spec:
   rules:
-  - host: api.{envInPath}raseedy.io
-    http:
+  - http:
       paths:
       - path: /{svc}
         backend:
-          serviceName: {svc}
+          serviceName: {svcLabel}
           servicePort: 8080
-  tls:
-  - hosts:
-    - "api.{envInPath}raseedy.io"
+    #host: api.{envInPath}raseedy.io
+
+  # tls:
+  # - hosts:
+  #   - "api.{envInPath}raseedy.io"
 '
 
 ingressInternalTmpl='apiVersion: networking.k8s.io/v1beta1
@@ -126,35 +134,69 @@ metadata:
     konghq.com/strip-path: "false"
     # konghq.com/plugins: keyauth
     # konghq.com/plugins: oidc-dev
-    env: "{env}"
     ##annotations##
+  labels:
+    app: {svcLabel}
+    type: ingressInternal
 spec:
   rules:
   - http:
       paths:
       - path: /{appName}
         backend:
-          serviceName: {svc}
+          serviceName: {svcLabel}
           servicePort: 8080
-  tls:
-  - hosts:
-    - "api.{envInPath}raseedy.io"
+  #tls:
+  #- hosts:
+  #  - "api.{envInPath}raseedy.io"
 '
+
+javaVolumesTmpl='
+        volumeMounts:
+        - name: {svc}-config-volume
+          mountPath: "/app/config"
+      volumes:
+      - name: {svc}-config-volume
+        configMap:
+          name: {svc}
+          items:
+          - key: application.properties
+            path: application.properties'
 
 envTmpl='
         - name: #name#
           value: "#value#"'
+
+volumeMountsTmpl='
+        volumeMounts:
+        #mountsList#'
+volumeMountTmpl='
+        - name: {name}
+          mountPath: {path}
+
+volumesTmpl='
+      volumes:
+      #volumeList#'
+
+volumeTmple='
+      - name: {name}
+        configMap:
+          name: {cmName}
+          items:
+          - key: {key}
+            path: {path}
+      '
 
 svcKustomization='apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 namespace: default
 
-
 resources:
 - deployment.yaml
-
 #resources#
+#ingresses#
+
 
 configMapGenerator:
 - name: {svc}
@@ -162,11 +204,10 @@ configMapGenerator:
   - application.properties
 '
 
-
 envKustomization='apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: default
+namespace: {env}
 
 nameSuffix: {nameSuffix}
 namePrefix: {namePrefix}
@@ -174,17 +215,36 @@ namePrefix: {namePrefix}
 bases:
 #bases#
 
-resources:
-#ingresses#
-#ingressesInternal#
+patches:
+- path: ingress-patch.yaml
+  target:
+    kind: Ingress
+    labelSelector: type=ingressExternal
+
+commonLabels:
+  env: {env}
 
 images:
 #images#
 '
+
+envIngressPatch='# patch ingress files 
+- op: replace
+  path: /spec/rules/0/host
+  value: "api.{env}.raseedy.io"
+
+- op: add
+  path: /spec/tls
+  value:
+  - hosts:
+    - api.{env}.raseedy.io 
+'
+
 imageTmpl='
   - name: {image}
     newTag: {tag}
 '
+
 
 # variables to be filled dynamically and pushed to kustomization.yaml with only the generated files
 bases=""
@@ -192,7 +252,9 @@ ingresses=""
 ingressesInternal=""
 
 
+# service directory is created under the target environment folder, dev, stg, and prod
 createServicesDir(){
+
     mkdir -p $overlay 2>/dev/null
     mkdir -p $base 2>/dev/null
 
@@ -201,10 +263,11 @@ createServicesDir(){
     # echo "found services: $services"
     for svc in $services; do
         echo "service: $svc"
+        # svc="$namePrefix$svc$nameSuffix"
         # echo "${svc#env#}" 
         createDeploymentFiles $svc 
         bases="- ../../base/$appsName/$svc \n${bases}"
-        ingresses="- ingress-${svc}-${env}.yaml \n${ingresses}"
+        # ingresses="- ingress-${svc}-${env}.yaml \n${ingresses}"
     done
 
     # createEnvCustomization 
@@ -214,7 +277,7 @@ createServicesDir(){
 # create kustomization.yaml file for dev environment out of latest known built containers
 createEnvCustomizationFromRegistry(){
   
-  services=`grep -lE 'service.deploy=true' ./**/.env | cut -d '/' -f2 2>/dev/null`
+  services=`grep -lE '^service.deploy=true' ./**/.env | cut -d '/' -f2 2>/dev/null`
 
   for svc in $services; do
 
@@ -253,14 +316,20 @@ createEnvCustomizationFromRegistry(){
 
   echo "images: $images"
 
+  # kustomization=${envKustomization//#bases#/$bases}
   kustomization=${envKustomization//#bases#/$bases}
-  kustomization=${kustomization//#ingresses#/$ingresses}
-  kustomization=${kustomization//#ingressesInternal#/$ingressesInternal}
+  # kustomization=${kustomization//#ingresses#/$ingresses}
+  # kustomization=${kustomization//#ingressesInternal#/$ingressesInternal}
   kustomization=${kustomization//#images#/$images}
   # printf "$kustomization" 
   echo "to path: $to"
+  printf "$kustomization" | sed "s/{namePrefix}/\"${namePrefix}\"/g;s/{nameSuffix}/\"${nameSuffix}\"/g;s/{env}/${env}/g" | tee $overlay/kustomization.yaml
+
+  # print patch file
+  printf "$envIngressPatch" | sed "s/{envInPath}/$envInPath/g;s/{env}/$env/g" > $overlay/ingress-patch.yaml
+
   # printf "$kustomization" | sed "s/{namePrefix}/\"\"/g;s/{nameSuffix}/-${env}/g" | tee $overlay/kustomization.yaml
-  printf "$kustomization" | sed "s/{namePrefix}/\"\"/g;s/{nameSuffix}/\"\"/g" | tee $overlay/kustomization.yaml
+  # printf "$kustomization" | sed "s/{namePrefix}/\"\"/g;s/{nameSuffix}/\"\"/g" | tee $overlay/kustomization.yaml
 }
 
 createEnvCustomization(){
@@ -301,16 +370,31 @@ createEnvCustomization(){
     
 }
 
-
+# create deployment files per environment for each service. Service target directory: $env/$svc 
 createDeploymentFiles(){
     svcDir=$1
+    # replace all '.' by '-', workaround for the project names with dots in Core repo
+    # replace all '_' by '-', workaround for the project names with dots, nodejs prjects, bff
     svc=${1//\./-}
+    svc=${svc//_/-}
+
+    # used in ingress::path:: /$svcContext
+    svcContext=$svc
+    # used in all names
+    svcLabel=$namePrefix$svc$nameSuffix
+
     # sv=${svc//\./-}  #replace all '.' with '-' 
     newEnv="" 
     allEnv=""
+    local ingresses=""
 
-    echo "generating folder for service: $svc"
-    mkdir -p $base/$svc 2>/dev/null
+
+    echo "generating folder for service: $svc under environment $env"
+    # mkdir -p $base/$svc 2>/dev/null
+    # local target=$overlay/$svc
+    local target=$base/$svc
+    mkdir -p $target 2>/dev/null
+    # target variable is shortcut for all outputs 
 
     # generate environment variables from every line in .env that starts with var.
     envVars=`grep -E "^env." $from/$svcDir/.env | sed 's/env.//g'`
@@ -339,26 +423,29 @@ createDeploymentFiles(){
 
     # printf "$allEnv"
 
-    #service target directory
-    local target=$base/$svc
 
     # create deployment yaml
 
     # substitute single variables 
-    deployment=`printf "$deploymentTmp" | sed "s/{svc}/$svc/g;s/{ingPort}/$ingPort/g;s/{svcPort}/$svcPort/g;s/{env}/$env/g;s/{svcVersion}/${svcVersion}/g;s/{repo}/$repo/g;s/{svcImage}/$svcDir/"`
+    deployment=`printf "$deploymentTmp" | sed "s/{svc}/$svc/g;s/{ingPort}/$ingPort/g;s/{svcPort}/$svcPort/g;s/{env}/$env/g;s/{svcVersion}/${svcVersion}/g;s/{repo}/$repo/g;s/{svcImage}/$svcDir/g;s/{svcLabel}/$svcLabel/g"`
     # substitute multi line variables
 
     deployment=`printf "${deployment//##env##/$allEnv}"`
+
     # printf "$deployment" | tee $target/deployment.yaml
     printf "$deployment" > $target/deployment.yaml
 
-    # generate ingress, read required variables from application.properties 
+    ##### generate ingress, read required variables from application.properties 
     # contextPath=`grep -E 'context-path' $from/**/application.properties` 
+    local ingresses=""
 
-    echo "context path: ${svc}"
-    ingress=`printf "$ingressTmpl" | sed "s/{svc}/$svc/g;s/{envInPath}/$envInPath/g;s/{env}/$env/g"`
+    echo "ingress context path: /${svc}"
+    ingress=`printf "$ingressTmpl" | sed "s/{svc}/$svc/g;s/{envInPath}/$envInPath/g;s/{env}/$env/g;s/{svcLabel}/$svcLabel/g"`
     # printf "$ingress" | tee $overlay/ingress-${svc}-${env}.yaml
-    printf "$ingress" > $overlay/ingress-${svc}-${env}.yaml
+    ingressName="ingress-$svc.yaml"
+
+    printf "$ingress" > $target/$ingressName
+    ingresses="- $ingressName \n${ingresses}"
 
     # search for applicationName in application.properties, if found, then create internal ingress with context /<applicaitonName>
     # no host defined, default tls will be used 
@@ -369,14 +456,17 @@ createDeploymentFiles(){
     echo "found application.name, generating internal ingress to be called without host "
     echo "service: $svc : /$appName"
     if [ "$appName" ]; then
-        ingressInternal=`printf "$ingressInternalTmpl" | sed "s/{svc}/$svc/g;s/{envInPath}/$envInPath/g;s/{env}/$env/g;s/{appName}/$appName/g"`
-        ingressesInternal="- ingress-internal-${svc}-${env}.yaml \n${ingressesInternal}"
+        ingressName="ingress-internal-${svc}.yaml"
+
+        ingressInternal=`printf "$ingressInternalTmpl" | sed "s/{svc}/$svc/g;s/{envInPath}/$envInPath/g;s/{env}/$env/g;s/{appName}/$appName/g;s/{svcLabel}/$svcLabel/g"`
+        ingressesInternal="- $ingressName \n${ingressesInternal}"
         # printf "$ingressInternal" | tee $overlay/ingress-internal-${svc}-${env}.yaml
-        printf "$ingressInternal" > $overlay/ingress-internal-${svc}-${env}.yaml
+        printf "$ingressInternal" > $target/$ingressName
+        ingresses="- $ingressName \n${ingresses}"
     fi
 
 
-    # generate application.properties for config map
+    #### generate application.properties for config map
     properties=`grep -E '^prop.' $from/$svcDir/.env | sed 's/prop.//g'`
     echo ""
     echo "found properties: "
@@ -384,8 +474,13 @@ createDeploymentFiles(){
 
     # generate kustomization for this service
 
+    # printf "$svcKustomization" | sed "s/{namePrefix}/\"\"/g;s/{svc}/$svc/g" | tee $target/kustomization.yaml
+
+    # move ingress files from global kustomization.yaml to $svc/kustomization.yaml
     # kustomize=`printf "$kustomization | sed "s/{env}/$env/g"`
-    printf "$svcKustomization" | sed "s/{namePrefix}/\"\"/g;s/{svc}/$svc/g" | tee $target/kustomization.yaml
+    local kustomization=`printf "$svcKustomization" | sed "s/{namePrefix}/\"\"/g;s/{svc}/$svc/g" `
+    kustomization=${kustomization//#ingresses#/$ingresses}
+    printf "$kustomization" > $target/kustomization.yaml
 
     # mkdir -p $target 2>/dev/null
 
