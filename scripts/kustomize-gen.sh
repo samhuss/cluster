@@ -245,6 +245,21 @@ imageTmpl='
     newTag: {tag}
 '
 
+subdomainIngressPatch='# patch ingress files to serve portal as a subdomain to current environment
+- op: replace
+  path: /spec/rules/0/host
+  value: "{subdomain}.{env}.raseedy.io"
+
+- op: add
+  path: /spec/tls
+  value:
+  - hosts:
+    - {subdomain}.{env}.raseedy.io 
+
+- op: replace
+  path: /spec/rules/0/http/paths/0/path
+  value: "/"
+'
 
 # variables to be filled dynamically and pushed to kustomization.yaml with only the generated files
 bases=""
@@ -325,8 +340,23 @@ createEnvCustomizationFromRegistry(){
   echo "to path: $to"
   printf "$kustomization" | sed "s/{namePrefix}/\"${namePrefix}\"/g;s/{nameSuffix}/\"${nameSuffix}\"/g;s/{env}/${env}/g" | tee $overlay/kustomization.yaml
 
-  # print patch file
-  printf "$envIngressPatch" | sed "s/{envInPath}/$envInPath/g;s/{env}/$env/g" > $overlay/ingress-patch.yaml
+
+  # update: for services that should be served as portal with subdomain, example: portal1.dev.raseedy.io 
+  # application should have only one subdomain, supports multi-repo only for now
+  subdomain=`grep -e '^subdomain=' ./**/.env | cut -d ':' -f2 | cut -d '=' -f2 | tail -1`
+
+  # print patch file: 2 types, one for portal if subdomain is found, other for an API service 
+  echo "found subdomain: $subdomain"
+  if [ $subdomain ]; then
+    echo "exporting subdomain patch: $subdomain"
+    printf "$subdomainIngressPatch" | sed "s/{envInPath}/$envInPath/g;s/{env}/$env/g;s/{subdomain}/$subdomain/g" > $overlay/ingress-patch.yaml
+  else
+    echo "exporting normal atch without subdomain"
+    printf "$envIngressPatch" | sed "s/{envInPath}/$envInPath/g;s/{env}/$env/g" > $overlay/ingress-patch.yaml
+  fi
+
+
+  # printf "$envIngressPatch" | sed "s/{envInPath}/$envInPath/g;s/{env}/$env/g" > $overlay/ingress-patch.yaml
 
   # printf "$kustomization" | sed "s/{namePrefix}/\"\"/g;s/{nameSuffix}/-${env}/g" | tee $overlay/kustomization.yaml
   # printf "$kustomization" | sed "s/{namePrefix}/\"\"/g;s/{nameSuffix}/\"\"/g" | tee $overlay/kustomization.yaml
